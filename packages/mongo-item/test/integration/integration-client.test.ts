@@ -10,7 +10,7 @@ import { createDebugLogger } from 'rejoinder';
 import {
   exports as packageExports,
   name as packageName
-} from 'rootverse:package.json';
+} from 'rootverse+mongo-item:package.json';
 
 import {
   ensurePackageHasBeenBuilt,
@@ -18,7 +18,7 @@ import {
 } from 'testverse:util.ts';
 
 const TEST_IDENTIFIER = `${packageName.split('/').at(-1)!}-client`;
-const debug = createDebugLogger({ namespace: 'mongo' }).extend(TEST_IDENTIFIER);
+const debug = createDebugLogger({ namespace: 'mongo-item' }).extend(TEST_IDENTIFIER);
 const nodeVersion = process.env.XPIPE_MATRIX_NODE_VERSION || process.version;
 
 debug(`nodeVersion: "${nodeVersion}" (process.version=${process.version})`);
@@ -27,7 +27,7 @@ reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true, test: true })
 
 beforeAll(async () => {
   await ensurePackageHasBeenBuilt(
-    toDirname(toAbsolutePath(require.resolve('rootverse:package.json'))),
+    toDirname(toAbsolutePath(require.resolve('rootverse+mongo-item:package.json'))),
     packageName,
     packageExports
   );

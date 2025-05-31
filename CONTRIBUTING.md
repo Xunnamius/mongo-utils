@@ -78,8 +78,7 @@ likelihood your PR passes review:
 At this point, you're ready to create your PR and ✨ contribute ✨!
 
 [atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
-[choose-new-issue]:
-  https://github.com/Xunnamius/mongo-utils/issues/new/choose
+[choose-new-issue]: https://github.com/Xunnamius/mongo-utils/issues/new/choose
 [code-of-conduct]:
   https://github.com/Xunnamius/mongo-utils/.github/CODE_OF_CONDUCT.md
 [codecov]: https://about.codecov.io

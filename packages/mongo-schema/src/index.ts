@@ -198,9 +198,7 @@ export async function getAliasFromName(nameActual: string) {
   if (aliases.length) {
     debug(
       `reverse-mapped database name "${nameActual}" to alias${
-        aliases.length === 1
-          ? ` "${aliases.toString()}"`
-          : `es: ${aliases.join(', ')}`
+        aliases.length === 1 ? ` "${aliases.toString()}"` : `es: ${aliases.join(', ')}`
       }`
     );
 

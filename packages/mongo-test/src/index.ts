@@ -216,9 +216,7 @@ export function setupMemoryServerOverride(params?: {
   beforeAll(async () => {
     try {
       if (errored) {
-        debug.warn(
-          '"beforeAll" jest lifecycle hook was skipped due to previous errors'
-        );
+        debug.warn('"beforeAll" jest lifecycle hook was skipped due to previous errors');
       } else {
         await server.ensureInstance();
         const uri = server.getUri();

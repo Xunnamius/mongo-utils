@@ -62,8 +62,7 @@ export async function itemExists<T extends Document>(
 ): Promise<boolean> {
   let excludeIdProperty: string | null = null;
   let excludeId: string | ObjectId | null = null;
-  const idProperty =
-    typeof id === 'string' || id instanceof ObjectId ? '_id' : id.key;
+  const idProperty = typeof id === 'string' || id instanceof ObjectId ? '_id' : id.key;
   id = typeof id === 'string' || id instanceof ObjectId ? id : id.id;
 
   if (options?.excludeId) {
@@ -99,9 +98,7 @@ export async function itemExists<T extends Document>(
         ...(excludeIdProperty ? { [excludeIdProperty]: { $ne: excludeId } } : {})
       } as unknown as Parameters<typeof collection.countDocuments>[0],
       {
-        ...(options?.caseInsensitive
-          ? { collation: { locale: 'en', strength: 2 } }
-          : {})
+        ...(options?.caseInsensitive ? { collation: { locale: 'en', strength: 2 } } : {})
       }
     )) !== 0
   );
@@ -111,12 +108,7 @@ export async function itemExists<T extends Document>(
  * The shape of an object that can be translated into an `ObjectId` (or `T`)
  * instance or is `null`/`undefined`.
  */
-export type IdItem<T extends ObjectId> =
-  | WithId<unknown>
-  | string
-  | T
-  | null
-  | undefined;
+export type IdItem<T extends ObjectId> = WithId<unknown> | string | T | null | undefined;
 
 /**
  * The shape of an array of objects that can be translated into an array of

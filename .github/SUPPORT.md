@@ -51,8 +51,7 @@ you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
 [badge-issue-resolution]:
   https://isitmaintained.com/badge/resolution/Xunnamius/mongo-utils.svg
   'Average time to resolve an issue'
-[choose-new-issue]:
-  https://github.com/Xunnamius/mongo-utils/issues/new/choose
+[choose-new-issue]: https://github.com/Xunnamius/mongo-utils/issues/new/choose
 [github-blog]:
   https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
 [link-issue-resolution]:

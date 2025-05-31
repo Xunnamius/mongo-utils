@@ -25,11 +25,44 @@ function getJestAliases() {
   // ! directly, consider regenerating aliases across the entire project with:
   // ! `npx symbiote project renovate --regenerate-assets --assets-preset ...`
   return {
-    "^universe:(.+)$": "<rootDir>/src/$1",
-    "^universe$": `<rootDir>/src/index.${extension}`,
-    "^testverse:(.+)$": "<rootDir>/test/$1",
-    "^typeverse:(.+)$": "<rootDir>/types/$1",
-    "^rootverse:(.+)$": "<rootDir>/$1"
-  }
-
+    '^multiverse\\+mongo\\x2dcommon:(.+)$': '<rootDir>/packages/mongo-common/src/$1',
+    '^multiverse\\+mongo\\x2ditem:(.+)$': '<rootDir>/packages/mongo-item/src/$1',
+    '^multiverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
+      '<rootDir>/packages/mongo-object-id-pseudo-sort/src/$1',
+    '^multiverse\\+mongo\\x2dschema:(.+)$': '<rootDir>/packages/mongo-schema/src/$1',
+    '^multiverse\\+mongo\\x2dtest:(.+)$': '<rootDir>/packages/mongo-test/src/$1',
+    '^multiverse\\+mongo\\x2dcommon$': `<rootDir>/packages/mongo-common/src/index.${extension}`,
+    '^multiverse\\+mongo\\x2ditem$': `<rootDir>/packages/mongo-item/src/index.${extension}`,
+    '^multiverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort$': `<rootDir>/packages/mongo-object-id-pseudo-sort/src/index.${extension}`,
+    '^multiverse\\+mongo\\x2dschema$': `<rootDir>/packages/mongo-schema/src/index.${extension}`,
+    '^multiverse\\+mongo\\x2dtest$': `<rootDir>/packages/mongo-test/src/index.${extension}`,
+    '^universe\\+mongo\\x2dcommon:(.+)$': '<rootDir>/packages/mongo-common/src/$1',
+    '^universe\\+mongo\\x2ditem:(.+)$': '<rootDir>/packages/mongo-item/src/$1',
+    '^universe\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
+      '<rootDir>/packages/mongo-object-id-pseudo-sort/src/$1',
+    '^universe\\+mongo\\x2dschema:(.+)$': '<rootDir>/packages/mongo-schema/src/$1',
+    '^universe\\+mongo\\x2dtest:(.+)$': '<rootDir>/packages/mongo-test/src/$1',
+    '^universe\\+mongo\\x2dcommon$': `<rootDir>/packages/mongo-common/src/index.${extension}`,
+    '^universe\\+mongo\\x2ditem$': `<rootDir>/packages/mongo-item/src/index.${extension}`,
+    '^universe\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort$': `<rootDir>/packages/mongo-object-id-pseudo-sort/src/index.${extension}`,
+    '^universe\\+mongo\\x2dschema$': `<rootDir>/packages/mongo-schema/src/index.${extension}`,
+    '^universe\\+mongo\\x2dtest$': `<rootDir>/packages/mongo-test/src/index.${extension}`,
+    '^universe:(.+)$': '<rootDir>/src/$1',
+    '^universe$': `<rootDir>/src/index.${extension}`,
+    '^testverse\\+mongo\\x2dcommon:(.+)$': '<rootDir>/packages/mongo-common/test/$1',
+    '^testverse\\+mongo\\x2ditem:(.+)$': '<rootDir>/packages/mongo-item/test/$1',
+    '^testverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
+      '<rootDir>/packages/mongo-object-id-pseudo-sort/test/$1',
+    '^testverse\\+mongo\\x2dschema:(.+)$': '<rootDir>/packages/mongo-schema/test/$1',
+    '^testverse\\+mongo\\x2dtest:(.+)$': '<rootDir>/packages/mongo-test/test/$1',
+    '^testverse:(.+)$': '<rootDir>/test/$1',
+    '^typeverse:(.+)$': '<rootDir>/types/$1',
+    '^rootverse\\+mongo\\x2dcommon:(.+)$': '<rootDir>/packages/mongo-common/$1',
+    '^rootverse\\+mongo\\x2ditem:(.+)$': '<rootDir>/packages/mongo-item/$1',
+    '^rootverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
+      '<rootDir>/packages/mongo-object-id-pseudo-sort/$1',
+    '^rootverse\\+mongo\\x2dschema:(.+)$': '<rootDir>/packages/mongo-schema/$1',
+    '^rootverse\\+mongo\\x2dtest:(.+)$': '<rootDir>/packages/mongo-test/$1',
+    '^rootverse:(.+)$': '<rootDir>/$1'
+  };
 }
