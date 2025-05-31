@@ -39,13 +39,9 @@
     "/package.json",
     "/README.md"
   ],
-  "engines": {
-    "node": "^20.18.0 || ^22.12.0 || >=23.3.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "build": "npm run build:dist --",
     "build:changelog": "symbiote build changelog --env NODE_NO_WARNINGS=1",
@@ -75,5 +71,12 @@
   "dependencies": {},
   "devDependencies": {
     "@-xun/symbiote": "^4.1.0"
+  },
+  "engines": {
+    "node": "^20.18.0 || ^22.12.0 || >=23.3.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

@@ -1,0 +1,8 @@
+{
+  "name": "@-xun/mongo-item",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/mongo-utils.git"
+  }
+}
