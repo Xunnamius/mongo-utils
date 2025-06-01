@@ -164,9 +164,9 @@ describe('::itemToObjectId', () => {
 
     expect(itemToObjectId(ids)).toStrictEqual(ids);
 
-    expect(
-      itemToObjectId([id.toString(), id.toString(), id.toString()])
-    ).toStrictEqual(ids);
+    expect(itemToObjectId([id.toString(), id.toString(), id.toString()])).toStrictEqual(
+      ids
+    );
   });
 
   it('throws if item is irreducible or invalid', async () => {
@@ -185,9 +185,7 @@ describe('::itemToObjectId', () => {
       [[new ObjectId(), 'bad'], 'invalid ObjectId "bad"']
     ];
 
-    await expectExceptionsWithMatchingErrors(errors, (params) =>
-      itemToObjectId(params)
-    );
+    await expectExceptionsWithMatchingErrors(errors, (params) => itemToObjectId(params));
   });
 
   it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');
@@ -240,9 +238,7 @@ describe('::itemToStringId', () => {
       [[new ObjectId(), 'bad'], 'invalid ObjectId "bad"']
     ];
 
-    await expectExceptionsWithMatchingErrors(errors, (params) =>
-      itemToStringId(params)
-    );
+    await expectExceptionsWithMatchingErrors(errors, (params) => itemToStringId(params));
   });
 
   it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');

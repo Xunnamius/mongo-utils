@@ -27,7 +27,7 @@ A predicate for sorting object ids like mongo would
 
 <br />
 
-# @-xun/mongo-object-id-pseudo-sort
+# @-xun/mongo-oid-sort
 
 <!-- symbiote-template-region-end -->
 
@@ -63,7 +63,7 @@ A predicate for sorting object ids like mongo would.
 To install:
 
 ```shell
-npm install @-xun/mongo-object-id-pseudo-sort
+npm install @-xun/mongo-oid-sort
 ```
 
 ## Usage
@@ -85,33 +85,16 @@ Further documentation can be found under [`docs/`][x-repo-docs].
 
 ### Published Package Details
 
-<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
-
 This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
 built by Babel for use in Node.js versions that are not end-of-life. For
 TypeScript users, this package supports both `"Node10"` and `"Node16"` module
 resolution strategies.
 
-✄------------✄-----------⏶-⏷-----------✄------------✄
-
-This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
-versions that are not end-of-life. For TypeScript users, this package supports
-both `"Node10"` and `"Node16"` module resolution strategies.
-
-✄------------✄-----------⏶-⏷-----------✄------------✄
-
-This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
-browser-like environments. For TypeScript users, this package supports both
-`"Node10"` and `"Node16"` module resolution strategies.
-
-<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- symbiote-template-region-end -->
 <!-- TODO: additional package details here -->
 <!-- symbiote-template-region-start 7 -->
 
 <details><summary>Expand details</summary>
-
-<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
 
 That means both CJS2 (via `require(...)`) and ESM (via `import { ... } from ...`
 or `await import(...)`) source will load this package from the same entry points
@@ -120,22 +103,6 @@ shipped/smaller package size, avoiding [dual package
 hazard][x-pkg-dual-package-hazard] entirely, distributables are not
 packed/bundled/uglified, a drastically less complex build process, and CJS
 consumers aren't shafted.
-
-✄------------✄-----------⏶-⏷-----------✄------------✄
-
-That means ESM source will load this package via `import { ... } from ...` or
-`await import(...)` and CJS source will load this package via dynamic
-`import()`. This has several benefits, the foremost being: less code
-shipped/smaller package size, avoiding [dual package
-hazard][x-pkg-dual-package-hazard] entirely, distributables are not
-packed/bundled/uglified, and a drastically less complex build process.
-
-The glaring downside, which may or may not be relevant, is that CJS consumers
-cannot `require()` this package and can only use `import()` in an asynchronous
-context. This means, in effect, CJS consumers may not be able to use this
-package at all.
-
-<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 
 Each entry point (i.e. `ENTRY`) in [`package.json`'s
 `exports[ENTRY]`][x-repo-package-json] object includes one or more [export
@@ -205,22 +172,21 @@ See the [table of contributors][x-repo-contributors].
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/Xunnamius/mongo-utils
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/@-xun/mongo-object-id-pseudo-sort?style=flat-square
+  https://img.shields.io/npm/dm/@-xun/mongo-oid-sort?style=flat-square
   'Number of times this package has been downloaded per month'
-[x-badge-downloads-link]:
-  https://npmtrends.com/@-xun/mongo-object-id-pseudo-sort
+[x-badge-downloads-link]: https://npmtrends.com/@-xun/mongo-oid-sort
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/Xunnamius/mongo-utils?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/@-xun/mongo-object-id-pseudo-sort?style=flat-square
+  https://img.shields.io/npm/l/@-xun/mongo-oid-sort?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/Xunnamius/mongo-utils/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/@-xun/mongo-object-id-pseudo-sort
+  https://xunn.at/npm-pkg-version/@-xun/mongo-oid-sort
   'Install this package using npm or yarn!'
-[x-badge-npm-link]: https://npm.im/@-xun/mongo-object-id-pseudo-sort
+[x-badge-npm-link]: https://npm.im/@-xun/mongo-oid-sort
 [x-badge-repo-link]: https://github.com/Xunnamius/mongo-utils
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release

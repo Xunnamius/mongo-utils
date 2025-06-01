@@ -1,4 +1,4 @@
-import { asMockedClass, asMockedFunction } from '@xunnamius/jest-types';
+import { asMockedClass, asMockedFunction } from '@-xun/jest-types';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { isolatedImportFactory, mockEnvFactory } from 'testverse/setup';
@@ -47,11 +47,9 @@ const importDbLib = isolatedImportFactory<MongoSchemaPackage>({
   path: 'multiverse/mongo-schema'
 });
 
-const importTestDbLib = isolatedImportFactory<typeof import('multiverse/mongo-test')>(
-  {
-    path: 'multiverse/mongo-test'
-  }
-);
+const importTestDbLib = isolatedImportFactory<typeof import('multiverse/mongo-test')>({
+  path: 'multiverse/mongo-test'
+});
 
 beforeEach(() => {
   mockedMongoSchema = undefined;
@@ -228,9 +226,7 @@ describe('::hydrateDb', () => {
     const testLib = importTestDbLib();
     const db = await lib.getDb({ name: 'fake-alias-1' });
 
-    await expect(
-      testLib.hydrateDb({ name: 'fake-alias-1' })
-    ).resolves.toBeUndefined();
+    await expect(testLib.hydrateDb({ name: 'fake-alias-1' })).resolves.toBeUndefined();
 
     Object.entries((await testLib.getDummyData())['fake-db-1']).forEach(
       ([colName, colData]) => {
@@ -500,13 +496,13 @@ describe('::setupMemoryServerOverride', () => {
           undefined as unknown as jest.DoneCallback
         );
 
-        Object.keys(
-          (await mockedMongoCustomizations.getSchemaConfig()).databases
-        ).map((name) => {
-          expect(destroySpy).toBeCalledWith({ name });
-          expect(initializeDbSpy).toBeCalledWith({ name });
-          expect(hydrateDbSpy).toBeCalledWith({ name });
-        });
+        Object.keys((await mockedMongoCustomizations.getSchemaConfig()).databases).map(
+          (name) => {
+            expect(destroySpy).toBeCalledWith({ name });
+            expect(initializeDbSpy).toBeCalledWith({ name });
+            expect(hydrateDbSpy).toBeCalledWith({ name });
+          }
+        );
 
         await asMockedFunction(afterAll).mock.calls[1][0](
           undefined as unknown as jest.DoneCallback

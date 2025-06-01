@@ -52,11 +52,11 @@ Utilities for a more pleasant DX with the mongodb driver
 
 <!-- symbiote-template-region-end -->
 
-- [@-xun/mongo-common][1] — Common exports for mongo-utils.
-- [@-xun/mongo-item][2] — Tools for quickly finding items and documents in
+- [@-xun/mongo-item][1] — Tools for quickly finding items and documents in
   mongo.
-- [@-xun/mongo-object-id-pseudo-sort][3] — A predicate for sorting object ids
-  like mongo would.
+- [@-xun/mongo-common][2] — Common exports for mongo-utils.
+- [@-xun/mongo-oid-sort][3] — A predicate for sorting object ids like mongo
+  would.
 - [@-xun/mongo-schema][4] — Tools for sharing common schemas across utility
   packages.
 - [@-xun/mongo-test][5] — Tools for testing mongo databases.
@@ -148,8 +148,8 @@ specification. Contributions of any kind welcome!
 [x-repo-pr-compare]: https://github.com/Xunnamius/mongo-utils/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
-[1]: ./packages/mongo-common
-[2]: ./packages/mongo-item
+[1]: ./packages/mongo-item
+[2]: ./packages/mongo-common
 [3]: ./packages/mongo-object-id-pseudo-sort
 [4]: ./packages/mongo-schema
 [5]: ./packages/mongo-test

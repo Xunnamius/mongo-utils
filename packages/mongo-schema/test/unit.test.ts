@@ -1,4 +1,4 @@
-import { asMockedClass } from '@xunnamius/jest-types';
+import { asMockedClass } from '@-xun/jest-types';
 import { MongoClient, type Db } from 'mongodb';
 import { isolatedImportFactory, mockEnvFactory } from 'testverse/setup';
 
@@ -206,9 +206,7 @@ describe('::overwriteMemory', () => {
     lib.overwriteMemory({ ...getInitialInternalMemoryState(), client, databases });
 
     await expect(lib.getClient()).resolves.toBe(client);
-    await expect(lib.getDb({ name: 'fake-db-1' })).resolves.toBe(
-      databases['fake-db-1']
-    );
+    await expect(lib.getDb({ name: 'fake-db-1' })).resolves.toBe(databases['fake-db-1']);
   });
 });
 
@@ -261,9 +259,7 @@ describe('::getNameFromAlias', () => {
   it('passes through actual database name if given', async () => {
     expect.hasAssertions();
 
-    await expect(importDbLib().getNameFromAlias('fake-db-3')).resolves.toBe(
-      'fake-db-3'
-    );
+    await expect(importDbLib().getNameFromAlias('fake-db-3')).resolves.toBe('fake-db-3');
   });
 
   it('throws if database is not in schema', async () => {

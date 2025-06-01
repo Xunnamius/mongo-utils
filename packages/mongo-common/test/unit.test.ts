@@ -26,9 +26,7 @@ describe('::getCommonSchemaConfig', () => {
         databases: { someDb: { collections: [] } },
         aliases: { app: 'badDb' }
       })
-    ).toThrow(
-      /aliased database "badDb" \(referred to by alias "app"\) does not exist/
-    );
+    ).toThrow(/aliased database "badDb" \(referred to by alias "app"\) does not exist/);
   });
 
   it('throws if an alias itself conflicts with a database name', async () => {
