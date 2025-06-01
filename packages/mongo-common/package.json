@@ -1,7 +1,7 @@
 {
   "name": "@-xun/mongo-common",
   "version": "1.0.0",
-  "description": "Common exports for mongo-utils",
+  "description": "Common schema and data exports for mongo-utils",
   "keywords": [],
   "homepage": "https://github.com/Xunnamius/mongo-utils/tree/main/packages/mongo-common#readme",
   "bugs": {
