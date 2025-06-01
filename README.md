@@ -23,7 +23,7 @@ Simple opinionated tools for streamlining mongodb driver interactions
 
 <br />
 
-# mongo-utils (mongo-utils-monorepo)
+# mongo-utils
 
 <!-- symbiote-template-region-end -->
 
