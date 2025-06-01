@@ -6,7 +6,7 @@
 
 <p align="center" width="100%">
 <!-- symbiote-template-region-end -->
-TODO: set a description
+Tools for quickly finding items and documents in mongo
 <!-- symbiote-template-region-start 2 -->
 </p>
 
@@ -31,7 +31,7 @@ TODO: set a description
 
 <!-- symbiote-template-region-end -->
 
-TODO: set a description.
+Tools for quickly finding items and documents in mongo.
 
 <!-- symbiote-template-region-start 3 -->
 

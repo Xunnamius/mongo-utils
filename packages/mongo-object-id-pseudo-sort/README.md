@@ -6,7 +6,7 @@
 
 <p align="center" width="100%">
 <!-- symbiote-template-region-end -->
-TODO: set a description
+A predicate for sorting object ids like mongo would
 <!-- symbiote-template-region-start 2 -->
 </p>
 
@@ -31,7 +31,7 @@ TODO: set a description
 
 <!-- symbiote-template-region-end -->
 
-TODO: set a description.
+A predicate for sorting object ids like mongo would.
 
 <!-- symbiote-template-region-start 3 -->
 

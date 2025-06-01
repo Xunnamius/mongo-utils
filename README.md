@@ -23,7 +23,7 @@ Simple opinionated tools for streamlining mongodb driver interactions
 
 <br />
 
-# mongo-utils (@-xun/mongo)
+# mongo-utils (mongo-utils-monorepo)
 
 <!-- symbiote-template-region-end -->
 
@@ -52,11 +52,14 @@ Utilities for a more pleasant DX with the mongodb driver
 
 <!-- symbiote-template-region-end -->
 
-- [@-xun/mongo-common][1] — TODO: set a description.
-- [@-xun/mongo-object-id-pseudo-sort][2] — TODO: set a description.
-- [@-xun/mongo-test][3] — TODO: set a description.
-- [@-xun/mongo-schema][4] — TODO: set a description.
-- [@-xun/mongo-item][5] — TODO: set a description.
+- [@-xun/mongo-common][1] — Common exports for mongo-utils.
+- [@-xun/mongo-item][2] — Tools for quickly finding items and documents in
+  mongo.
+- [@-xun/mongo-object-id-pseudo-sort][3] — A predicate for sorting object ids
+  like mongo would.
+- [@-xun/mongo-schema][4] — Tools for sharing common schemas across utility
+  packages.
+- [@-xun/mongo-test][5] — Tools for testing mongo databases.
 
 <!-- symbiote-template-region-start 5 -->
 
@@ -146,7 +149,7 @@ specification. Contributions of any kind welcome!
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
 [1]: ./packages/mongo-common
-[2]: ./packages/mongo-object-id-pseudo-sort
-[3]: ./packages/mongo-test
+[2]: ./packages/mongo-item
+[3]: ./packages/mongo-object-id-pseudo-sort
 [4]: ./packages/mongo-schema
-[5]: ./packages/mongo-item
+[5]: ./packages/mongo-test
