@@ -42,27 +42,8 @@
     // ! directly, consider regenerating aliases across the entire project with:
     // ! `npx symbiote project renovate --regenerate-assets --assets-preset ...`
     "paths": {
-      "multiverse+mongo-common:*": ["packages/mongo-common/src/*"],
-      "multiverse+mongo-item:*": ["packages/mongo-item/src/*"],
-      "multiverse+mongo-object-id-pseudo-sort:*": [
-        "packages/mongo-object-id-pseudo-sort/src/*"
-      ],
-      "multiverse+mongo-schema:*": ["packages/mongo-schema/src/*"],
-      "multiverse+mongo-test:*": ["packages/mongo-test/src/*"],
-      "multiverse+mongo-common": ["packages/mongo-common/src/index.ts"],
-      "multiverse+mongo-item": ["packages/mongo-item/src/index.ts"],
-      "multiverse+mongo-object-id-pseudo-sort": [
-        "packages/mongo-object-id-pseudo-sort/src/index.ts"
-      ],
-      "multiverse+mongo-schema": ["packages/mongo-schema/src/index.ts"],
-      "multiverse+mongo-test": ["packages/mongo-test/src/index.ts"],
-      "universe+mongo-common:*": ["packages/mongo-common/src/*"],
-      "universe+mongo-item:*": ["packages/mongo-item/src/*"],
-      "universe+mongo-object-id-pseudo-sort:*": [
-        "packages/mongo-object-id-pseudo-sort/src/*"
-      ],
-      "universe+mongo-schema:*": ["packages/mongo-schema/src/*"],
-      "universe+mongo-test:*": ["packages/mongo-test/src/*"],
+      "universe": ["src/index.ts"],
+      "universe:*": ["src/*"],
       "universe+mongo-common": ["packages/mongo-common/src/index.ts"],
       "universe+mongo-item": ["packages/mongo-item/src/index.ts"],
       "universe+mongo-object-id-pseudo-sort": [
@@ -70,8 +51,28 @@
       ],
       "universe+mongo-schema": ["packages/mongo-schema/src/index.ts"],
       "universe+mongo-test": ["packages/mongo-test/src/index.ts"],
-      "universe:*": ["src/*"],
-      "universe": ["src/index.ts"],
+      "universe+mongo-common:*": ["packages/mongo-common/src/*"],
+      "universe+mongo-item:*": ["packages/mongo-item/src/*"],
+      "universe+mongo-object-id-pseudo-sort:*": [
+        "packages/mongo-object-id-pseudo-sort/src/*"
+      ],
+      "universe+mongo-schema:*": ["packages/mongo-schema/src/*"],
+      "universe+mongo-test:*": ["packages/mongo-test/src/*"],
+      "multiverse+mongo-common": ["packages/mongo-common/src/index.ts"],
+      "multiverse+mongo-item": ["packages/mongo-item/src/index.ts"],
+      "multiverse+mongo-object-id-pseudo-sort": [
+        "packages/mongo-object-id-pseudo-sort/src/index.ts"
+      ],
+      "multiverse+mongo-schema": ["packages/mongo-schema/src/index.ts"],
+      "multiverse+mongo-test": ["packages/mongo-test/src/index.ts"],
+      "multiverse+mongo-common:*": ["packages/mongo-common/src/*"],
+      "multiverse+mongo-item:*": ["packages/mongo-item/src/*"],
+      "multiverse+mongo-object-id-pseudo-sort:*": [
+        "packages/mongo-object-id-pseudo-sort/src/*"
+      ],
+      "multiverse+mongo-schema:*": ["packages/mongo-schema/src/*"],
+      "multiverse+mongo-test:*": ["packages/mongo-test/src/*"],
+      "testverse:*": ["test/*"],
       "testverse+mongo-common:*": ["packages/mongo-common/test/*"],
       "testverse+mongo-item:*": ["packages/mongo-item/test/*"],
       "testverse+mongo-object-id-pseudo-sort:*": [
@@ -79,7 +80,6 @@
       ],
       "testverse+mongo-schema:*": ["packages/mongo-schema/test/*"],
       "testverse+mongo-test:*": ["packages/mongo-test/test/*"],
-      "testverse:*": ["test/*"],
       "typeverse:*": ["types/*"],
       "rootverse+mongo-common:*": ["packages/mongo-common/*"],
       "rootverse+mongo-item:*": ["packages/mongo-item/*"],
