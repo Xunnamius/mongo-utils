@@ -27,7 +27,7 @@ Simple opinionated tools for streamlining mongodb driver interactions
 
 <!-- symbiote-template-region-end -->
 
-Utilities for a more pleasant DX with the mongodb driver
+Utilities for a more pleasant DX with the mongodb driver.
 
 <!-- symbiote-template-region-start 3 -->
 
