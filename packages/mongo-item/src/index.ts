@@ -1,4 +1,7 @@
+/* eslint-disable no-restricted-syntax */
 import { ObjectId } from 'mongodb';
+
+import { ErrorMessage } from 'universe+mongo-item:error.ts';
 
 import type { Collection, Document, WithId } from 'mongodb';
 
@@ -79,9 +82,7 @@ export async function itemExists<T extends Document>(
   }
 
   if (idProperty === excludeIdProperty) {
-    throw new AppValidationError(
-      `cannot lookup an item by property "${idProperty}" while also filtering results by that same property`
-    );
+    throw new Error(ErrorMessage.LookupFilterConflict(idProperty));
   }
 
   if (
@@ -190,6 +191,7 @@ export function itemToObjectId<T extends ObjectId>(
           return id._id as T;
         } else {
           try {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             return new ObjectId(String(id)) as T;
           } catch (error) {
             if (options?.ignoreInvalidId) {
@@ -204,6 +206,7 @@ export function itemToObjectId<T extends ObjectId>(
       return item._id as T;
     } else {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         return new ObjectId(String(item)) as T;
       } catch (error) {
         if (options?.ignoreInvalidId) {
@@ -214,9 +217,7 @@ export function itemToObjectId<T extends ObjectId>(
       }
     }
   } catch (error) {
-    const throwable = new ValidationError(
-      ErrorMessage.InvalidItem(String(_id), 'ObjectId')
-    );
+    const throwable = new Error(ErrorMessage.InvalidItem(String(_id), 'ObjectId'));
     throwable.cause = error;
     throw throwable;
   }
