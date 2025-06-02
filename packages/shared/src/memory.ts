@@ -17,7 +17,7 @@ export type SharedMemory = {
   /**
    * Memoized MongoDB driver client connection.
    */
-  client: MongoClient | null;
+  client: MongoClient | undefined;
   /**
    * Memoized MongoDB driver Database instances.
    */
@@ -25,11 +25,11 @@ export type SharedMemory = {
   /**
    * Memoized resolved database schemas and aliases.
    */
-  schema: Functionable<DbSchema> | null;
+  schema: Functionable<DbSchema> | undefined;
   /**
    * Memoized dummy data.
    */
-  dummy: Functionable<DummyData>;
+  dummy: Functionable<DummyData> | undefined;
 };
 
 const functionableKeys: (keyof SharedMemory)[] = ['dummy', 'schema'];
@@ -82,10 +82,10 @@ export function resetSharedMemory() {
  */
 function getInitialSharedMemoryState(): SharedMemory {
   return {
-    schema: null,
-    client: null,
+    client: undefined,
     databases: {},
-    dummy: {}
+    schema: undefined,
+    dummy: undefined
   };
 }
 
