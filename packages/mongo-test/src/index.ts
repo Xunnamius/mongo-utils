@@ -1,85 +1,62 @@
-import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { InvalidAppConfigurationError, TrialError } from 'named-app-errors';
+import assert from 'node:assert';
 import inspector from 'node:inspector';
 
-import { debugFactory } from 'multiverse/debug-extended';
-import { getEnv } from 'multiverse/next-env';
+import { mockDateNowMs } from '@-xun/jest';
 
 import {
   closeClient,
   destroyDb,
   getAliasFromName,
   getDb,
-  getInitialInternalMemoryState,
   getNameFromAlias,
   getSchemaConfig,
-  initializeDb,
-  overwriteMemory
-} from 'multiverse/mongo-schema';
+  initializeDb
+} from '@-xun/mongo-schema';
+
+import { getEnv } from '@-xun/next-env';
+import { MongoClient, ObjectId } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { createDebugLogger } from 'rejoinder';
+
+import { getFromSharedMemory, setToSharedMemory } from 'multiverse+shared:memory.ts';
+
+import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
 import type { Document } from 'mongodb';
-import type { DbSchema } from 'multiverse/mongo-schema';
+import type { DummyData } from 'multiverse+shared:schema.ts';
 
-// TODO: this package must be published transpiled to cjs by babel but NOT
-// TODO: webpacked!
-
-const debug = debugFactory('mongo-test:test-db');
+const debug = createDebugLogger({ namespace: 'mongo-test' });
+export type { DummyData };
 
 /**
- * Generic dummy data used to hydrate databases and their collections.
+ * Sets global dummy data singleton (which already includes some built-in
+ * defaults).
+ *
+ * This function must be called before any call to `getDummyData` or an error
+ * will be thrown.
  */
-export type DummyData = {
-  /**
-   * The data inserted into each collection in the named database.
-   * `databaseName` can also be an alias.
-   */
-  [databaseName: string]: {
-    /**
-     * Timestamp of when this dummy data was generated (in ms since unix epoch).
-     */
-    _generatedAt: number;
-
-    /**
-     * The objects (if array) or object (if non-array) inserted into the
-     * named collection.
-     */
-    [collectionName: string]: unknown;
-  };
-};
-
-/**
- * For use when mocking the contents of files containing `getDummyData` and/or
- * `getSchemaConfig`.
- */
-export type TestCustomizations = {
-  getDummyData: () => Promise<DummyData>;
-  getSchemaConfig: () => Promise<DbSchema>;
-};
+export function setDummyData(schemaFn: () => DummyData) {
+  debug('setting schema configuration to memory');
+  setToSharedMemory('dummy', schemaFn);
+}
 
 /**
  * Imports `getDummyData` from "configverse/get-dummy-data" and calls it.
  */
-export async function getDummyData(): Promise<DummyData> {
-  try {
-    debug('importing `getDummyData` from "configverse/get-dummy-data"');
-    return await (await import('configverse/get-dummy-data')).getDummyData();
-  } catch (error) {
-    debug.warn(
-      `failed to import getDummyData from "configverse/get-dummy-data": ${error}`
-    );
+export function getDummyData(): DummyData {
+  debug('returning schema configuration from memory');
 
-    throw new InvalidAppConfigurationError(
-      'could not resolve mongodb dummy data: failed to import getDummyData from "configverse/get-dummy-data". Did you forget to register "configverse/get-dummy-data" as an import alias/path?'
-    );
-  }
+  const data = getFromSharedMemory('dummy');
+  assert(data, ErrorMessage.NoDummyConfigured());
+
+  return data;
 }
 
 /**
  * Fill an initialized database with data. You should call {@link initializeDb}
  * before calling this function.
  */
-export async function hydrateDb({
+export async function hydrateDbWithDummyData({
   name
 }: {
   /**
@@ -88,32 +65,26 @@ export async function hydrateDb({
   name: string;
 }) {
   const db = await getDb({ name });
-  const nameActual = await getNameFromAlias(name);
-  const aliases = await getAliasFromName(nameActual);
+  const nameActual = getNameFromAlias(name);
+  const aliases = getAliasFromName(nameActual);
 
   debug(`hydrating database ${nameActual}`);
 
-  const rawDummyData = await getDummyData();
+  const rawDummyData = getDummyData();
   let dummyData = rawDummyData[nameActual];
 
   if (aliases[0] !== nameActual) {
     const foundAliases = aliases.filter((alias) => !!rawDummyData[alias]);
 
     if (foundAliases.length > 1) {
-      throw new InvalidAppConfigurationError(
-        `the following aliases have duplicate dummy data specifications (only one may exist): ${foundAliases.join(
-          ', '
-        )}`
-      );
+      throw new Error(ErrorMessage.DuplicateAliasSpecifications(foundAliases));
     }
 
     const alias = foundAliases[0];
 
     if (alias) {
       if (dummyData) {
-        throw new InvalidAppConfigurationError(
-          `duplicate dummy data specifications for database "${nameActual}" and alias "${alias}"`
-        );
+        throw new Error(ErrorMessage.DuplicateDatabaseSpecifications(nameActual, alias));
       }
 
       debug(`(using alias "${alias}")`);
@@ -122,23 +93,19 @@ export async function hydrateDb({
   }
 
   if (!dummyData) {
-    throw new InvalidAppConfigurationError(
-      `dummy data for database "${nameActual}" does not exist`
-    );
+    throw new Error(ErrorMessage.NoDummyData(nameActual));
   }
 
-  // eslint-disable-next-line unicorn/prefer-set-has
-  const collectionNames = (await getSchemaConfig()).databases[
-    nameActual
-  ].collections.map((col) => (typeof col === 'string' ? col : col.name));
+  // ? We know for a fact that nameActual is in databases at this point
+  const collectionNames = getSchemaConfig().databases[nameActual]!.collections.map(
+    (col) => (typeof col === 'string' ? col : col.name)
+  );
 
   await Promise.all(
     Object.entries(dummyData).map(([colName, colSchema]) => {
       if (colName !== '_generatedAt') {
         if (!collectionNames.includes(colName)) {
-          throw new InvalidAppConfigurationError(
-            `collection "${nameActual}.${colName}" referenced in dummy data is not defined in source db schema`
-          );
+          throw new Error(ErrorMessage.NoDummyDataCollection(nameActual, colName));
         }
 
         return db.collection(colName).insertMany([colSchema].flat() as Document[]);
@@ -168,11 +135,12 @@ export function setupMemoryServerOverride(params?: {
   // ? real mongodb instance (super bad!!!)
   let errored = false;
 
+  const debugPort = getEnv().MONGODB_MS_PORT;
   const port =
     // * https://stackoverflow.com/a/67445850/1367414
-    ((getEnv().DEBUG_INSPECTING || inspector.url() !== undefined) &&
-      getEnv().MONGODB_MS_PORT) ||
-    undefined;
+    debugPort && (getEnv().DEBUG_INSPECTING || inspector.url() !== undefined)
+      ? debugPort
+      : undefined;
 
   debug(`using ${port ? `port ${port}` : 'random port'} for mongo memory server`);
 
@@ -196,13 +164,13 @@ export function setupMemoryServerOverride(params?: {
           'reinitialization was skipped due to a previous jest lifecycle errors'
         );
       } else {
-        const databases = Object.keys((await getSchemaConfig()).databases);
+        const databases = Object.keys(getSchemaConfig().databases);
         debug('reinitializing mongo databases');
         await Promise.all(
           databases.map((name) =>
             destroyDb({ name })
               .then(() => initializeDb({ name }))
-              .then(() => hydrateDb({ name }))
+              .then(() => hydrateDbWithDummyData({ name }))
           )
         );
       }
@@ -222,17 +190,11 @@ export function setupMemoryServerOverride(params?: {
         const uri = server.getUri();
         debug(`connecting to in-memory dummy mongo server at ${uri}`);
 
-        if (port && !(uri.endsWith(`:${port}/`) || uri.endsWith(`:${port}`))) {
-          throw new TrialError(
-            `unable to start mongodb memory server: port ${port} seems to be in use`
-          );
+        if (port && !(uri.endsWith(`:${port}`) || uri.endsWith(`:${port}/`))) {
+          throw new Error(ErrorMessage.PortUnavailable(port));
         }
 
-        overwriteMemory({
-          ...getInitialInternalMemoryState(),
-          client: await MongoClient.connect(uri)
-        });
-
+        setToSharedMemory('client', await MongoClient.connect(uri));
         if (params?.defer) await reinitializeServer();
       }
     } catch (error) {
@@ -257,4 +219,27 @@ export function setupMemoryServerOverride(params?: {
      */
     reinitializeServer
   };
+}
+
+/**
+ * Creates an {@link ObjectId} by explicitly passing `mockDateNowMs` as
+ * the inception time, which is the same thing that {@link ObjectId} does
+ * internally with the real `Date.now`.
+ *
+ * **This should only be used in modules with import side-effects that execute
+ * before `useMockDateNow` is called** later in downstream code. If you are
+ * unsure, you probably don't need to use this function and should just create a
+ * new {@link ObjectId} instead.
+ *
+ * The point of this function is to avoid race conditions when mocking parts of
+ * the {@link Date} object that _sometimes_ result in _later_ calls to
+ * {@link ObjectId} generating IDs that were _less_ than the IDs generated
+ * _before_ it.
+ */
+export function generateMockSensitiveObjectId() {
+  // * Adopted from ObjectId::generate function. Turns out this is the cause of
+  // * some flakiness with tests where order is determined by ObjectId.
+  // ? The "replacement" for the deprecated constructor returns something else
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  return new ObjectId(Math.floor(mockDateNowMs / 1000));
 }

@@ -1,28 +1,14 @@
-import { setupMemoryServerOverride } from 'multiverse/mongo-test';
-import { getClient } from 'multiverse/mongo-schema';
+import { getClient } from '@-xun/mongo-schema';
 
-import type { TestCustomizations } from 'multiverse/mongo-test';
+import { setSchemaConfig } from 'universe+mongo-schema';
+import { setDummyData } from 'universe+mongo-test';
 
-jest.mock(
-  'configverse/get-schema-config',
-  (): typeof import('configverse/get-schema-config') =>
-    mockedMongoCustomizations as unknown as typeof import('configverse/get-schema-config')
-);
-
-jest.mock(
-  'configverse/get-dummy-data',
-  (): typeof import('configverse/get-dummy-data') =>
-    mockedMongoCustomizations as unknown as typeof import('configverse/get-dummy-data')
-);
+import { setupMemoryServerOverride } from '@-xun/mongo-test';
 
 const now = Date.now();
 
-let mockedMongoCustomizations: TestCustomizations;
-
 beforeEach(() => {
-  mockedMongoCustomizations = mockedMongoCustomizations || {};
-
-  mockedMongoCustomizations.getSchemaConfig = async () => {
+  setSchemaConfig(() => {
     return {
       databases: {
         'db-1': {
@@ -48,9 +34,9 @@ beforeEach(() => {
         'alias-2': 'db-2'
       }
     };
-  };
+  });
 
-  mockedMongoCustomizations.getDummyData = async () => {
+  setDummyData(() => {
     return {
       'db-1': {
         _generatedAt: now,
@@ -63,7 +49,7 @@ beforeEach(() => {
         'col-3': [{ key: 1, item: 'd' }]
       }
     };
-  };
+  });
 });
 
 describe('[run using non-deferred setupMemoryServerOverride]', () => {
