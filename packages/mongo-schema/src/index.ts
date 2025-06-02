@@ -42,8 +42,11 @@ export function getSchemaConfig(): DbSchema {
 }
 
 /**
- * Accepts a database alias (or real name) and returns its real name. If the
- * actual database is not listed in the schema, an error is thrown.
+ * Accepts a database alias (or real name) and returns its real name.
+ *
+ * If the actual database is not listed in the schema, an error is thrown; that
+ * is: if this function doesn't throw, `alias` _must_ either be (1) a
+ * `nameActual` in `schema.databases` or (2) successfully maps to one.
  */
 export function getNameFromAlias(alias: string) {
   const schema = getSchemaConfig();
@@ -61,12 +64,16 @@ export function getNameFromAlias(alias: string) {
 }
 
 /**
- * Accepts a database name (or an alias) and returns one or more aliases. If the
- * named database has no aliases listed in the schema, said database name is
- * returned as a single-element array. If said database name is not listed in
+ * Accepts a database name (or an alias) and returns one or more aliases.
+ *
+ * If the named database has no aliases listed in the schema, said database name
+ * is returned as a single-element array. If said database name is not listed in
  * the schema, an error is thrown.
+ *
+ * That is: if this function doesn't throw, `nameActual` _must_ (1) be in
+ * `schema.databases` and (2) map to zero or more aliases.
  */
-export function getAliasFromName(nameActual: string) {
+export function getAliasFromName(nameActual: string): string[] {
   const schema = getSchemaConfig();
 
   if (!schema.databases[nameActual]?.collections) {
