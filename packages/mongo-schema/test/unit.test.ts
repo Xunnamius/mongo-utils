@@ -1,61 +1,63 @@
-import { asMockedClass } from '@-xun/jest-types';
-import { MongoClient, type Db } from 'mongodb';
-import { isolatedImportFactory, mockEnvFactory } from 'testverse/setup';
+import { MongoClient } from 'mongodb';
 
-import { getInitialInternalMemoryState } from 'multiverse/mongo-schema';
-import type { TestCustomizations } from 'multiverse/mongo-test';
+import {
+  closeClient,
+  destroyDb,
+  getAliasFromName,
+  getClient,
+  getDb,
+  getNameFromAlias,
+  getSchemaConfig,
+  initializeDb,
+  setSchemaConfig
+} from 'universe+mongo-schema';
+
+import { ErrorMessage } from 'universe+mongo-schema:error.ts';
+import { resetSharedMemory } from 'universe+shared:memory.ts';
+
+import { asMocked, mockEnvFactory } from 'testverse:util.ts';
+
+import type { DbSchema } from 'universe+mongo-schema';
 
 jest.mock('mongodb');
-jest.mock(
-  'configverse/get-schema-config',
-  (): typeof import('configverse/get-schema-config') =>
-    mockedMongoCustomizations as unknown as typeof import('configverse/get-schema-config')
-);
 
 const withMockedEnv = mockEnvFactory({ NODE_ENV: 'test' });
+const mockMongoClient = asMocked(MongoClient);
 
-const mockMongoClient = asMockedClass(MongoClient);
-let mockedMongoCustomizations: TestCustomizations;
+const expectedSchema: DbSchema = {
+  databases: {
+    'fake-db-1': {
+      collections: ['col']
+    },
 
-const importDbLib = isolatedImportFactory<typeof import('multiverse/mongo-schema')>({
-  path: 'multiverse/mongo-schema'
-});
+    'fake-db-2': {
+      collections: [
+        'col-1',
+        { name: 'col-2', createOptions: { capped: true } },
+        { name: 'col-3', indices: [{ spec: 'some-key' }] },
+        {
+          name: 'col-4',
+          indices: [{ spec: ['some-key', -1], options: { comment: '' } }]
+        }
+      ]
+    },
+
+    'fake-db-3': {
+      collections: ['col']
+    }
+  },
+  aliases: {
+    'fake-alias-1': 'fake-db-1',
+    'fake-alias-2': 'fake-db-2',
+    'fake-alias-3': 'fake-db-2'
+  }
+};
 
 beforeEach(() => {
-  mockedMongoCustomizations = mockedMongoCustomizations || {};
+  setSchemaConfig(() => expectedSchema);
 
-  mockedMongoCustomizations.getSchemaConfig = async () => {
-    return {
-      databases: {
-        'fake-db-1': {
-          collections: ['col']
-        },
-
-        'fake-db-2': {
-          collections: [
-            'col-1',
-            { name: 'col-2', createOptions: { capped: true } },
-            { name: 'col-3', indices: [{ spec: 'some-key' }] },
-            {
-              name: 'col-4',
-              indices: [{ spec: ['some-key', -1], options: { comment: '' } }]
-            }
-          ]
-        },
-
-        'fake-db-3': {
-          collections: ['col']
-        }
-      },
-      aliases: {
-        'fake-alias-1': 'fake-db-1',
-        'fake-alias-2': 'fake-db-2',
-        'fake-alias-3': 'fake-db-2'
-      }
-    };
-  };
-
-  mockMongoClient.connect = jest.fn((url: string) =>
+  mockMongoClient.connect = jest.fn();
+  mockMongoClient.connect.mockImplementation((url: string) =>
     Promise.resolve(
       new (class {
         url = url;
@@ -99,23 +101,22 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  resetSharedMemory();
+});
+
 describe('::getSchemaConfig', () => {
   it('dynamically imports customizations', async () => {
     expect.hasAssertions();
 
-    await expect(importDbLib().getSchemaConfig()).resolves.toStrictEqual(
-      await mockedMongoCustomizations.getSchemaConfig()
-    );
+    expect(getSchemaConfig()).toStrictEqual(expectedSchema);
   });
 
   it('rejects if customizations are unavailable', async () => {
     expect.hasAssertions();
 
-    // @ts-expect-error: don't care that we're deleting a non-optional prop
-    delete mockedMongoCustomizations.getSchemaConfig;
-    await expect(importDbLib().getSchemaConfig()).rejects.toThrow(
-      'configverse/get-schema-config'
-    );
+    resetSharedMemory();
+    expect(() => getSchemaConfig()).toThrow(ErrorMessage.NoSchemaConfigured());
   });
 });
 
@@ -123,13 +124,11 @@ describe('::getClient', () => {
   it("creates client if it doesn't already exist", async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const client = await lib.getClient();
-        await expect(lib.getClient()).resolves.toBe(client);
-        expect(mockMongoClient.connect).toBeCalledTimes(1);
+        const client = await getClient();
+        await expect(getClient()).resolves.toBe(client);
+        expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
         expect(client.close()).toBe('abc');
       },
       { MONGODB_URI: 'abc' }
@@ -141,16 +140,14 @@ describe('::getDb', () => {
   it("creates db and connection if it doesn't already exist", async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        expect(mockMongoClient.connect).toBeCalledTimes(0);
-        const db = await lib.getDb({ name: 'fake-db-1' });
-        await expect(lib.getDb({ name: 'fake-db-1' })).resolves.toBe(db);
-        expect(mockMongoClient.connect).toBeCalledTimes(1);
-        await expect(lib.getDb({ name: 'fake-db-2' })).resolves.not.toBe(db);
-        expect(mockMongoClient.connect).toBeCalledTimes(1);
+        expect(mockMongoClient.connect).toHaveBeenCalledTimes(0);
+        const db = await getDb({ name: 'fake-db-1' });
+        await expect(getDb({ name: 'fake-db-1' })).resolves.toBe(db);
+        expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+        await expect(getDb({ name: 'fake-db-2' })).resolves.not.toBe(db);
+        expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
         expect(db.databaseName).toBe('fake-db-1');
       },
       { MONGODB_URI: 'abc' }
@@ -160,17 +157,15 @@ describe('::getDb', () => {
   it('automatically initializes newly created databases unless initialize is false', async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const db = await lib.getDb({ name: 'fake-db-1', initialize: false });
+        const db = await getDb({ name: 'fake-db-1', initialize: false });
         expect(db.createCollection).not.toHaveBeenCalled();
-        await lib.getDb({ name: 'fake-db-1' });
+        await getDb({ name: 'fake-db-1' });
         expect(db.createCollection).not.toHaveBeenCalled();
-        const db2 = await lib.getDb({ name: 'fake-db-2' });
+        const db2 = await getDb({ name: 'fake-db-2' });
         expect(db2.createCollection).toHaveBeenCalled();
-        await lib.getDb({ name: 'fake-db-2' });
+        await getDb({ name: 'fake-db-2' });
         expect(db2.createCollection).toHaveBeenCalled();
       },
       { MONGODB_URI: 'abc' }
@@ -180,33 +175,16 @@ describe('::getDb', () => {
   it('returns db using alias', async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const db1 = await lib.getDb({ name: 'fake-db-1' });
-        await expect(lib.getDb({ name: 'fake-alias-1' })).resolves.toBe(db1);
+        const db1 = await getDb({ name: 'fake-db-1' });
+        await expect(getDb({ name: 'fake-alias-1' })).resolves.toBe(db1);
 
-        const db2 = await lib.getDb({ name: 'fake-alias-2' });
-        await expect(lib.getDb({ name: 'fake-db-2' })).resolves.toBe(db2);
+        const db2 = await getDb({ name: 'fake-alias-2' });
+        await expect(getDb({ name: 'fake-db-2' })).resolves.toBe(db2);
       },
       { MONGODB_URI: 'abc' }
     );
-  });
-});
-
-describe('::overwriteMemory', () => {
-  it('replaces memory when called', async () => {
-    expect.hasAssertions();
-
-    const client = new (class {})() as MongoClient;
-    const databases = { 'fake-db-1': new (class {})() as Db };
-    const lib = importDbLib();
-
-    lib.overwriteMemory({ ...getInitialInternalMemoryState(), client, databases });
-
-    await expect(lib.getClient()).resolves.toBe(client);
-    await expect(lib.getDb({ name: 'fake-db-1' })).resolves.toBe(databases['fake-db-1']);
   });
 });
 
@@ -214,14 +192,12 @@ describe('::closeClient', () => {
   it('closes client and deletes memory', async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const client = await lib.getClient();
-        await expect(lib.getClient()).resolves.toBe(client);
-        await lib.closeClient();
-        await expect(lib.getClient()).resolves.not.toBe(client);
+        const client = await getClient();
+        await expect(getClient()).resolves.toBe(client);
+        await closeClient();
+        await expect(getClient()).resolves.not.toBe(client);
       },
       { MONGODB_URI: 'abc' }
     );
@@ -232,16 +208,14 @@ describe('::destroyDb', () => {
   it('drops database', async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const db = await lib.getDb({ name: 'fake-db-1' });
-        expect(db.dropDatabase).toBeCalledTimes(0);
-        await lib.destroyDb({ name: 'fake-db-2' });
-        expect(db.dropDatabase).toBeCalledTimes(0);
-        await lib.destroyDb({ name: 'fake-db-1' });
-        expect(db.dropDatabase).toBeCalledTimes(1);
+        const db = await getDb({ name: 'fake-db-1' });
+        expect(db.dropDatabase).toHaveBeenCalledTimes(0);
+        await destroyDb({ name: 'fake-db-2' });
+        expect(db.dropDatabase).toHaveBeenCalledTimes(0);
+        await destroyDb({ name: 'fake-db-1' });
+        expect(db.dropDatabase).toHaveBeenCalledTimes(1);
       },
       { MONGODB_URI: 'abc' }
     );
@@ -251,21 +225,21 @@ describe('::destroyDb', () => {
 describe('::getNameFromAlias', () => {
   it('returns an actual database name', async () => {
     expect.hasAssertions();
-    await expect(importDbLib().getNameFromAlias('fake-alias-2')).resolves.toBe(
-      'fake-db-2'
-    );
+
+    expect(getNameFromAlias('fake-alias-2')).toBe('fake-db-2');
   });
 
   it('passes through actual database name if given', async () => {
     expect.hasAssertions();
 
-    await expect(importDbLib().getNameFromAlias('fake-db-3')).resolves.toBe('fake-db-3');
+    expect(getNameFromAlias('fake-db-3')).toBe('fake-db-3');
   });
 
   it('throws if database is not in schema', async () => {
     expect.hasAssertions();
-    await expect(importDbLib().getNameFromAlias('fake-alias-x')).rejects.toThrow(
-      'database "fake-alias-x" is not defined'
+
+    expect(() => getNameFromAlias('fake-alias-x')).toThrow(
+      ErrorMessage.UnknownDatabaseAlias('fake-alias-x')
     );
   });
 });
@@ -274,11 +248,9 @@ describe('::getAliasFromName', () => {
   it('returns one or more aliases', async () => {
     expect.hasAssertions();
 
-    await expect(importDbLib().getAliasFromName('fake-db-1')).resolves.toStrictEqual([
-      'fake-alias-1'
-    ]);
+    expect(getAliasFromName('fake-db-1')).toStrictEqual(['fake-alias-1']);
 
-    await expect(importDbLib().getAliasFromName('fake-db-2')).resolves.toStrictEqual([
+    expect(getAliasFromName('fake-db-2')).toStrictEqual([
       'fake-alias-2',
       'fake-alias-3'
     ]);
@@ -287,15 +259,13 @@ describe('::getAliasFromName', () => {
   it('passes through actual database name if given', async () => {
     expect.hasAssertions();
 
-    await expect(importDbLib().getAliasFromName('fake-db-3')).resolves.toStrictEqual([
-      'fake-db-3'
-    ]);
+    expect(getAliasFromName('fake-db-3')).toStrictEqual(['fake-db-3']);
   });
 
   it('throws if database is not in schema', async () => {
     expect.hasAssertions();
-    await expect(importDbLib().getAliasFromName('fake-alias-3')).rejects.toThrow(
-      'database "fake-alias-3" is not defined'
+    expect(() => getAliasFromName('fake-alias-3')).toThrow(
+      ErrorMessage.UnknownDatabaseAlias('fake-alias-3')
     );
   });
 });
@@ -304,34 +274,38 @@ describe('::initializeDb', () => {
   it("initializes a database's collections according to schema", async () => {
     expect.hasAssertions();
 
-    const lib = importDbLib();
-
     await withMockedEnv(
       async () => {
-        const schema = await lib.getSchemaConfig();
-        const db1 = await lib.getDb({ name: 'fake-db-1' });
-        const db2 = await lib.getDb({ name: 'fake-db-2' });
+        const schema = getSchemaConfig();
+        const db1 = await getDb({ name: 'fake-db-1' });
+        const db2 = await getDb({ name: 'fake-db-2' });
 
-        await lib.initializeDb({ name: 'fake-db-1' });
-        await lib.initializeDb({ name: 'fake-db-2' });
+        await initializeDb({ name: 'fake-db-1' });
+        await initializeDb({ name: 'fake-db-2' });
 
-        schema.databases['fake-db-1'].collections.forEach((col) => {
-          expect(db1.createCollection).toBeCalledWith(
+        schema.databases['fake-db-1']!.collections.forEach((col) => {
+          expect(db1.createCollection).toHaveBeenCalledWith(
             ...(typeof col === 'string'
               ? [col, undefined]
               : [col.name, col.createOptions])
           );
         });
 
-        schema.databases['fake-db-2'].collections.forEach((col) => {
+        schema.databases['fake-db-2']!.collections.forEach((col) => {
           if (typeof col === 'string') {
-            expect(db2.createCollection).toBeCalledWith(col, undefined);
+            expect(db2.createCollection).toHaveBeenCalledWith(col, undefined);
           } else {
-            expect(db2.createCollection).toBeCalledWith(col.name, col.createOptions);
+            expect(db2.createCollection).toHaveBeenCalledWith(
+              col.name,
+              col.createOptions
+            );
 
             if (col.indices) {
               col.indices.forEach((spec) =>
-                expect(db2.createIndex).toBeCalledWith(spec.spec, spec.options || {})
+                expect(db2.createIndex).toHaveBeenCalledWith(
+                  spec.spec,
+                  spec.options || {}
+                )
               );
             }
           }

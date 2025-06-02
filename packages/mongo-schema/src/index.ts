@@ -1,166 +1,52 @@
+import assert from 'node:assert';
+
+import { getEnv } from '@-xun/next-env';
 import { MongoClient } from 'mongodb';
-import { InvalidAppConfigurationError } from 'named-app-errors';
-import { getEnv } from 'multiverse/next-env';
-import { debugFactory } from 'multiverse/debug-extended';
+import { createDebugLogger } from 'rejoinder';
 
-import type { Db } from 'mongodb';
+import {
+  getFromSharedMemory,
+  resetSharedMemory,
+  setToSharedMemory
+} from 'multiverse+shared:memory.ts';
 
-// TODO: this package must be published transpiled to cjs by babel but NOT
-// TODO: webpacked!
+import { ErrorMessage } from 'universe+mongo-schema:error.ts';
 
-const debug = debugFactory('mongo-schema:db');
-let memory: InternalMemory = getInitialInternalMemoryState();
+import type { CollectionSchema, DbSchema } from 'multiverse+shared:schema.ts';
 
-type createIndexParams = Parameters<Db['createIndex']>;
+const debug = createDebugLogger({ namespace: 'mongo-schema' });
 
-/**
- * An internal cache of connection, server schema, and database state.
- */
-export type InternalMemory = {
-  /**
-   * Memoized resolved database schemas and aliases.
-   */
-  schema: DbSchema | null;
-  /**
-   * Memoized MongoDB driver client connection.
-   */
-  client: MongoClient | null;
-  /**
-   * Memoized MongoDB driver Database instances.
-   */
-  databases: Record<string, Db>;
-};
+export type { CollectionSchema, DbSchema };
 
 /**
- * A configuration object representing a MongoDB collection.
+ * Sets global schema singleton (which already includes some built-in defaults).
+ *
+ * This function must be called before any call to `getSchemaConfig` or an error
+ * will be thrown.
  */
-export type CollectionSchema = {
-  /**
-   * The valid MongoDB name of the collection.
-   */
-  name: string;
-  /**
-   * An object passed directly to the MongoDB `createCollection` function via
-   * the `createOptions` parameter.
-   */
-  createOptions?: Parameters<Db['createCollection']>[1];
-  /**
-   * An object representing indices to be created on the MongoDB collection via
-   * `createIndex`.
-   */
-  indices?: {
-    spec: createIndexParams[1];
-    options?: createIndexParams[2];
-  }[];
-};
-
-/**
- * A configuration object representing one or more MongoDB databases and their
- * aliases.
- */
-export type DbSchema = {
-  /**
-   * All databases known to this system. These can be accessed via `getDb`.
-   */
-  databases: Record<
-    string,
-    {
-      /**
-       * An array of MongoDB collections.
-       */
-      collections: (string | CollectionSchema)[];
-    }
-  >;
-
-  /**
-   * These are alternative names to use with `getDb` that map to the names of
-   * databases known to this system. Aliases are specified as `alias:
-   * real-name`.
-   */
-  aliases: Record<string, string>;
-};
-
-/**
- * Returns a copy of the initial state of internal memory. Useful when
- * overwriting internal memory.
- */
-export function getInitialInternalMemoryState(): InternalMemory {
-  return {
-    schema: null,
-    client: null,
-    databases: {}
-  };
+export function setSchemaConfig(schemaFn: () => DbSchema) {
+  debug('setting schema configuration to memory');
+  setToSharedMemory('schema', schemaFn);
 }
 
 /**
- * Imports `getSchemaConfig` from "configverse/get-schema-config", calls it, and
- * memoizes the result.
+ * Returns global schema singleton.
  */
-export async function getSchemaConfig(): Promise<DbSchema> {
-  if (memory.schema) {
-    debug('returning schema configuration from memory');
-    return memory.schema;
-  } else {
-    try {
-      debug('importing `getSchemaConfig` from "configverse/get-schema-config"');
-      return (memory.schema = await (
-        await import('configverse/get-schema-config')
-      ).getSchemaConfig());
-    } catch (error) {
-      debug.warn(
-        `failed to import getSchemaConfig from "configverse/get-schema-config": ${error}`
-      );
+export function getSchemaConfig(): DbSchema {
+  debug('returning schema configuration from memory');
 
-      throw new InvalidAppConfigurationError(
-        'could not resolve mongodb schema configuration: failed to import getSchemaConfig from "configverse/get-schema-config". Did you forget to register "configverse/get-schema-config" as an import alias/path?'
-      );
-    }
-  }
-}
+  const schema = getFromSharedMemory('schema');
+  assert(schema, ErrorMessage.NoSchemaConfigured());
 
-/**
- * Mutates internal memory. Used for testing purposes.
- */
-export function overwriteMemory(newMemory: InternalMemory) {
-  memory = newMemory;
-  debug('internal memory overwritten');
-}
-
-/**
- * Lazily connects to the server on-demand, memoizing the result.
- */
-export async function getClient() {
-  if (!memory.client) {
-    const uri = getEnv().MONGODB_URI;
-    debug(`connecting to mongo server at ${uri}`);
-    memory.client = await MongoClient.connect(uri);
-  } else {
-    debug('connected (from memory) to mongo server');
-  }
-
-  return memory.client;
-}
-
-/**
- * Kills the MongoClient instance and any related database connections and
- * clears internal memory.
- */
-export async function closeClient() {
-  /* istanbul ignore else */
-  if (memory?.client) {
-    debug('closing server connection');
-    await memory.client.close(true);
-  }
-
-  memory = getInitialInternalMemoryState();
+  return schema;
 }
 
 /**
  * Accepts a database alias (or real name) and returns its real name. If the
  * actual database is not listed in the schema, an error is thrown.
  */
-export async function getNameFromAlias(alias: string) {
-  const schema = await getSchemaConfig();
+export function getNameFromAlias(alias: string) {
+  const schema = getSchemaConfig();
   const nameActual = schema.aliases[alias] || alias;
 
   if (alias !== nameActual) {
@@ -168,9 +54,7 @@ export async function getNameFromAlias(alias: string) {
   }
 
   if (!schema.databases[nameActual]?.collections) {
-    throw new InvalidAppConfigurationError(
-      `database "${nameActual}" is not defined in schema`
-    );
+    throw new Error(ErrorMessage.UnknownDatabaseAlias(nameActual));
   }
 
   return nameActual;
@@ -182,13 +66,11 @@ export async function getNameFromAlias(alias: string) {
  * returned as a single-element array. If said database name is not listed in
  * the schema, an error is thrown.
  */
-export async function getAliasFromName(nameActual: string) {
-  const schema = await getSchemaConfig();
+export function getAliasFromName(nameActual: string) {
+  const schema = getSchemaConfig();
 
   if (!schema.databases[nameActual]?.collections) {
-    throw new InvalidAppConfigurationError(
-      `database "${nameActual}" is not defined in schema`
-    );
+    throw new Error(ErrorMessage.UnknownDatabaseAlias(nameActual));
   }
 
   const aliases = Object.entries(schema.aliases)
@@ -205,6 +87,46 @@ export async function getAliasFromName(nameActual: string) {
     return aliases;
   } else {
     return [nameActual];
+  }
+}
+
+/**
+ * Lazily connects to the server on-demand, memoizing the result.
+ */
+export async function getClient() {
+  if (!getFromSharedMemory('client')) {
+    const uri = getEnv().MONGODB_URI;
+    debug('connecting to mongo server at %O', uri);
+    setToSharedMemory('client', await MongoClient.connect(uri));
+  } else {
+    debug('connected (from memory) to mongo server');
+  }
+
+  return getFromSharedMemory('client')!;
+}
+
+/**
+ * Kills the MongoClient instance and any related database connections and
+ * clears shared memory.
+ *
+ * If `clearCache` is `true` (default), internal shared memory will be cleared
+ * when this function is called. Set this to `false` if invoking this function
+ * anywhere other than at the top level of an application. Libraries meant to be
+ * invoked by such applications should be wary when using this function to clear
+ * shared memory since there could be multiple instances of this package in
+ * memory that could be relying upon it.
+ */
+export async function closeClient({ clearCache = true }: { clearCache?: boolean } = {}) {
+  const client = getFromSharedMemory('client');
+
+  /* istanbul ignore else */
+  if (client) {
+    debug('closing server connection');
+    await client.close(true);
+  }
+
+  if (clearCache) {
+    resetSharedMemory();
   }
 }
 
@@ -229,17 +151,19 @@ export async function getDb({
    */
   initialize?: boolean;
 }) {
-  const nameActual = await getNameFromAlias(name);
+  const nameActual = getNameFromAlias(name);
+  const databases = getFromSharedMemory('databases');
 
-  if (!memory.databases[nameActual]) {
+  if (!databases[nameActual]) {
     debug(`acquiring mongo database "${nameActual}"`);
 
     const client = await getClient();
+
     const existingDatabases = (
       await client.db('admin').admin().listDatabases()
     ).databases.map(({ name }) => name);
 
-    memory.databases[nameActual] = client.db(nameActual);
+    databases[nameActual] = client.db(nameActual);
 
     if (initialize !== false && !existingDatabases.includes(nameActual)) {
       debug(`calling initializeDb since "${nameActual}" was just created`);
@@ -249,7 +173,7 @@ export async function getDb({
     debug(`acquired (from memory) mongo database "${nameActual}"`);
   }
 
-  return memory.databases[nameActual];
+  return databases[nameActual];
 }
 
 /**
@@ -267,9 +191,12 @@ export async function destroyDb({
    */
   name: string;
 }) {
-  const nameActual = await getNameFromAlias(name);
+  const nameActual = getNameFromAlias(name);
   debug(`destroying database "${nameActual}" and its collections`);
-  return !memory.databases[nameActual] || (await getDb({ name })).dropDatabase();
+  return (
+    !getFromSharedMemory('databases')[nameActual] ||
+    (await getDb({ name })).dropDatabase()
+  );
 }
 
 /**
@@ -287,31 +214,27 @@ export async function initializeDb({
   name: string;
 }) {
   const db = await getDb({ name, initialize: false });
-  const nameActual = await getNameFromAlias(name);
+  const nameActual = getNameFromAlias(name);
 
   debug(`initializing database "${nameActual}"`);
 
   await Promise.all(
-    (await getSchemaConfig()).databases[nameActual].collections.map(
-      (colNameOrSchema) => {
-        const colSchema: CollectionSchema =
-          typeof colNameOrSchema === 'string'
-            ? {
-                name: colNameOrSchema
-              }
-            : colNameOrSchema;
+    getSchemaConfig().databases[nameActual]!.collections.map((colNameOrSchema) => {
+      const colSchema: CollectionSchema =
+        typeof colNameOrSchema === 'string'
+          ? {
+              name: colNameOrSchema
+            }
+          : colNameOrSchema;
 
-        debug(`initializing collection "${nameActual}.${colSchema.name}"`);
-        return db
-          .createCollection(colSchema.name, colSchema.createOptions)
-          .then((col) => {
-            return Promise.all(
-              colSchema.indices?.map((indexSchema) =>
-                col.createIndex(indexSchema.spec, indexSchema.options || {})
-              ) || []
-            );
-          });
-      }
-    )
+      debug(`initializing collection "${nameActual}.${colSchema.name}"`);
+      return db.createCollection(colSchema.name, colSchema.createOptions).then((col) => {
+        return Promise.all(
+          colSchema.indices?.map((indexSchema) =>
+            col.createIndex(indexSchema.spec, indexSchema.options || {})
+          ) || []
+        );
+      });
+    })
   );
 }
