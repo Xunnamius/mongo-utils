@@ -1,4 +1,4 @@
-import { getCommonSchemaConfig, getCommonDummyData } from 'multiverse/mongo-common';
+import { getCommonSchemaConfig, getCommonDummyData } from 'universe+mongo-common';
 
 describe('::getCommonSchemaConfig', () => {
   it('returns an object with dummy root schema and additional dummy schema', async () => {

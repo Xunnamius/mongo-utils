@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb';
-import { setupMemoryServerOverride } from 'multiverse/mongo-test';
-import { itemExists, itemToObjectId, itemToStringId } from 'multiverse/mongo-item';
-import { getDb } from 'multiverse/mongo-schema';
+import { setupMemoryServerOverride } from '@-xun/mongo-test';
+import { itemExists, itemToObjectId, itemToStringId } from '@-xun/mongo-item';
+import { getDb } from '@-xun/mongo-schema';
 import { toss } from 'toss-expression';
 import { TrialError } from 'named-app-errors';
-import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from 'multiverse/next-auth';
+import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from '@-xun/next-auth';
 
-import type { InternalAuthBearerEntry } from 'multiverse/next-auth';
-import { expectExceptionsWithMatchingErrors } from 'multiverse/jest-expect-matching-errors';
+import type { InternalAuthBearerEntry } from '@-xun/next-auth';
+import { expectExceptionsWithMatchingErrors } from '@-xun/jest-expect-matching-errors';
 
 setupMemoryServerOverride();
 

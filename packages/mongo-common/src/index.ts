@@ -1,22 +1,23 @@
-import cloneDeep from 'clone-deep';
-import { ObjectId } from 'mongodb';
-import { InvalidAppConfigurationError } from 'named-app-errors';
-
-import { mockDateNowMs } from 'multiverse/jest-mock-date';
+import { mockDateNowMs } from '@-xun/jest';
+import { safeDeepClone } from '@-xun/js';
 
 import {
   BANNED_BEARER_TOKEN,
   DEV_BEARER_TOKEN,
   DUMMY_BEARER_TOKEN
-} from 'multiverse/next-auth';
+} from '@-xun/next-api';
 
-import type { DbSchema } from 'multiverse/mongo-schema';
-import type { DummyData } from 'multiverse/mongo-test';
-import type { InternalAuthEntry } from 'multiverse/next-auth';
-import type { InternalLimitedLogEntry } from 'multiverse/next-limit';
-import type { InternalRequestLogEntry } from 'multiverse/next-log';
+import { ObjectId } from 'mongodb';
 
-export * from 'multiverse/jest-mock-date';
+import type { DbSchema } from '@-xun/mongo-schema';
+import type { DummyData } from '@-xun/mongo-test';
+import type {
+  InternalAuthEntry,
+  InternalLimitedLogEntry,
+  InternalRequestLogEntry
+} from '@-xun/next-api';
+
+export { mockDateNowMs, useMockDateNow } from '@-xun/jest';
 
 /**
  * A JSON representation of the backend Mongo database structure. This is used
@@ -86,33 +87,14 @@ export function getCommonSchemaConfig(additionalSchemaConfig?: DbSchema): DbSche
  *   - `root` (collections: `auth`, `request-log`, `limited-log`)
  */
 export function getCommonDummyData(additionalDummyData?: DummyData): DummyData {
-  return cloneDeep({ root: dummyRootData, ...additionalDummyData });
-}
-
-/**
- * Calls `new ObjectId(...)` explicitly passing {@link mockDateNowMs} as the
- * inception time, which is the same thing that {@link ObjectId} does internally
- * with the real `Date.now`.
- *
- * **This should only be used in modules with import side-effects that execute
- * before `useMockDateNow` is called** later in downstream code. If you are
- * unsure, you probably don't need to use this function and should just call
- * `new ObjectId()` instead.
- *
- * The point of this function is to avoid race conditions when mocking parts of
- * the {@link Date} object that _sometimes_ resulted in _later_ calls to
- * {@link ObjectId} generating IDs that were _less_ than the IDs generated
- * _before_ it.
- */
-export function generateMockSensitiveObjectId() {
-  // * Adopted from ObjectId::generate function. Turns out this is the cause of
-  // * some flakiness with tests where order is determined by ObjectId.
-  return new ObjectId(Math.floor(mockDateNowMs / 1000));
+  return safeDeepClone({ root: dummyRootData, ...additionalDummyData });
 }
 
 /**
  * The shape of the well-known `root` database's collections and their test
  * data.
+ *
+ * @see `DummyData` from the "shared" package
  */
 export type DummyRootData = {
   _generatedAt: number;
