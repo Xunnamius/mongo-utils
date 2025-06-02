@@ -35,6 +35,7 @@ function getEslintAliases() {
     ],
     ['multiverse+mongo-schema:*', './packages/mongo-schema/src/*'],
     ['multiverse+mongo-test:*', './packages/mongo-test/src/*'],
+    ['multiverse+shared:*', './packages/shared/src/*'],
     ['multiverse+mongo-common', './packages/mongo-common/src/index.ts'],
     ['multiverse+mongo-item', './packages/mongo-item/src/index.ts'],
     [
@@ -43,6 +44,7 @@ function getEslintAliases() {
     ],
     ['multiverse+mongo-schema', './packages/mongo-schema/src/index.ts'],
     ['multiverse+mongo-test', './packages/mongo-test/src/index.ts'],
+    ['multiverse+shared', './packages/shared/src/index.ts'],
     ['rootverse+mongo-common:*', './packages/mongo-common/*'],
     ['rootverse+mongo-item:*', './packages/mongo-item/*'],
     [
@@ -51,6 +53,7 @@ function getEslintAliases() {
     ],
     ['rootverse+mongo-schema:*', './packages/mongo-schema/*'],
     ['rootverse+mongo-test:*', './packages/mongo-test/*'],
+    ['rootverse+shared:*', './packages/shared/*'],
     ['rootverse:*', './*'],
     ['universe+mongo-common:*', './packages/mongo-common/src/*'],
     ['universe+mongo-item:*', './packages/mongo-item/src/*'],
@@ -60,6 +63,7 @@ function getEslintAliases() {
     ],
     ['universe+mongo-schema:*', './packages/mongo-schema/src/*'],
     ['universe+mongo-test:*', './packages/mongo-test/src/*'],
+    ['universe+shared:*', './packages/shared/src/*'],
     ['universe+mongo-common', './packages/mongo-common/src/index.ts'],
     ['universe+mongo-item', './packages/mongo-item/src/index.ts'],
     [
@@ -68,6 +72,7 @@ function getEslintAliases() {
     ],
     ['universe+mongo-schema', './packages/mongo-schema/src/index.ts'],
     ['universe+mongo-test', './packages/mongo-test/src/index.ts'],
+    ['universe+shared', './packages/shared/src/index.ts'],
     ['universe:*', './src/*'],
     ['universe', './src/index.ts'],
     ['testverse+mongo-common:*', './packages/mongo-common/test/*'],
@@ -78,6 +83,7 @@ function getEslintAliases() {
     ],
     ['testverse+mongo-schema:*', './packages/mongo-schema/test/*'],
     ['testverse+mongo-test:*', './packages/mongo-test/test/*'],
+    ['testverse+shared:*', './packages/shared/test/*'],
     ['testverse:*', './test/*'],
     ['typeverse:*', './types/*']
   ];
