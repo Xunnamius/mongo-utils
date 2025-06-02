@@ -39,8 +39,9 @@ Utilities for a more pleasant DX with the mongodb driver.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Packages](#packages)
-- [Contributing and Support](#contributing-and-support)
-  - [Contributors](#contributors)
+- [Usage](#usage)
+  - [Contributing and Support](#contributing-and-support)
+    - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- symbiote-template-region-start 4 -->
@@ -60,6 +61,31 @@ Utilities for a more pleasant DX with the mongodb driver.
 - [@-xun/mongo-schema][4] — Tools for sharing common schemas across utility
   packages.
 - [@-xun/mongo-test][5] — Tools for testing mongo databases.
+
+# Usage
+
+Currently, @-xun/mongo-schema is the base package (though it depends on
+[@-xun/next-env][6]). It is responsible for ensuring each database used by the
+software is always available and initialized as described by the currently
+registered schema.
+
+For that reason, @-xun/mongo-schema is relied upon by @-xun/mongo-test, which
+contains tools for manipulating the software's databases while under test.
+
+@-xun/mongo-common relies on both @-xun/mongo-schema and @-xun/mongo-test for
+their types, and contains common baseline schemas (along with their dummy
+testing data) used in some way by most of my mongo-related software.
+
+@-xun/mongo-item and @-xun/mongo-oid-sort are standalone tools.
+
+Projects should call `setSchemaConfig()` (from @-xun/mongo-schema) as early as
+possible during their initialization process. When running tests,
+`setDummyData()` from (@-xun/mongo-test) should similarly be called as early as
+possible. They can be passed common schema and dummy data from
+@-xun/mongo-common; this data should be tweaked further before being passed to
+`setSchemaConfig()` and `setDummyData()`. Once those two functions are called,
+`getDb()` and related functions will all work out-of-the-box and without further
+configuration!
 
 <!-- symbiote-template-region-start 5 -->
 
@@ -153,3 +179,4 @@ specification. Contributions of any kind welcome!
 [3]: ./packages/mongo-object-id-pseudo-sort
 [4]: ./packages/mongo-schema
 [5]: ./packages/mongo-test
+[6]: https://github.com/Xunnamius/react-utils/packages/next-env
