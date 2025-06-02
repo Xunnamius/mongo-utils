@@ -1,5 +1,7 @@
 import { MongoClient } from 'mongodb';
 
+import { resetSharedMemory } from 'multiverse+shared:memory.ts';
+
 import {
   closeClient,
   destroyDb,
@@ -13,7 +15,6 @@ import {
 } from 'universe+mongo-schema';
 
 import { ErrorMessage } from 'universe+mongo-schema:error.ts';
-import { resetSharedMemory } from 'universe+shared:memory.ts';
 
 import { asMocked, mockEnvFactory } from 'testverse:util.ts';
 
