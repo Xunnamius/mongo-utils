@@ -19,6 +19,11 @@ module.exports = deepMergeConfig(
   }),
   {
     // Any custom configs here will be deep merged with moduleExport's result
+    env: {
+      test: {
+        plugins: ['babel-plugin-explicit-exports-references']
+      }
+    }
   }
 );
 
