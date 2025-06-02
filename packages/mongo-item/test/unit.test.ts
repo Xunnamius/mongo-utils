@@ -1,13 +1,14 @@
-import { ObjectId } from 'mongodb';
-import { setupMemoryServerOverride } from '@-xun/mongo-test';
-import { itemExists, itemToObjectId, itemToStringId } from '@-xun/mongo-item';
+import { expectExceptionsWithMatchingErrors } from '@-xun/jest';
 import { getDb } from '@-xun/mongo-schema';
-import { toss } from 'toss-expression';
+import { setupMemoryServerOverride } from '@-xun/mongo-test';
+import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from '@-xun/next-api-common';
+import { ObjectId } from 'mongodb';
 import { TrialError } from 'named-app-errors';
-import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from '@-xun/next-auth';
+import { toss } from 'toss-expression';
 
-import type { InternalAuthBearerEntry } from '@-xun/next-auth';
-import { expectExceptionsWithMatchingErrors } from '@-xun/jest-expect-matching-errors';
+import { itemExists, itemToObjectId, itemToStringId } from 'universe+mongo-item';
+
+import type { InternalAuthBearerEntry } from '@-xun/next-api-common';
 
 setupMemoryServerOverride();
 
@@ -148,11 +149,11 @@ describe('::itemToObjectId', () => {
     expect(itemToObjectId(ids)).toStrictEqual(ids);
 
     expect(
-      itemToObjectId([{ _id: ids[0] }, { _id: ids[1] }, { _id: ids[2] }])
+      itemToObjectId([{ _id: ids[0]! }, { _id: ids[1]! }, { _id: ids[2]! }])
     ).toStrictEqual(ids);
 
     expect(
-      itemToObjectId([ids[0].toString(), ids[1].toString(), ids[2].toString()])
+      itemToObjectId([ids[0]!.toString(), ids[1]!.toString(), ids[2]!.toString()])
     ).toStrictEqual(ids);
   });
 
@@ -212,11 +213,11 @@ describe('::itemToStringId', () => {
     expect(itemToStringId(ids)).toStrictEqual(idStrings);
 
     expect(
-      itemToStringId([{ _id: ids[0] }, { _id: ids[1] }, { _id: ids[2] }])
+      itemToStringId([{ _id: ids[0]! }, { _id: ids[1]! }, { _id: ids[2]! }])
     ).toStrictEqual(idStrings);
 
     expect(
-      itemToStringId([ids[0].toString(), ids[1].toString(), ids[2].toString()])
+      itemToStringId([ids[0]!.toString(), ids[1]!.toString(), ids[2]!.toString()])
     ).toStrictEqual(idStrings);
   });
 
