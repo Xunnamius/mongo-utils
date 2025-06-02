@@ -62,7 +62,7 @@
     "test:packages:all": "symbiote test --env NODE_NO_WARNINGS=1 --tests all-local --scope unlimited --coverage"
   },
   "dependencies": {
-    "@-xun/next-env": "^1.0.0",
+    "@-xun/next-env": "^1.0.1",
     "core-js": "^3.42.0",
     "mongodb": "^6.16.0",
     "rejoinder": "^1.2.5"
