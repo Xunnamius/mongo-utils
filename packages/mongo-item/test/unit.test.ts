@@ -1,12 +1,12 @@
-import { expectExceptionsWithMatchingErrors } from '@-xun/jest';
 import { getDb } from '@-xun/mongo-schema';
 import { setupMemoryServerOverride } from '@-xun/mongo-test';
 import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from '@-xun/next-api-common';
 import { ObjectId } from 'mongodb';
-import { TrialError } from 'named-app-errors';
 import { toss } from 'toss-expression';
 
 import { itemExists, itemToObjectId, itemToStringId } from 'universe+mongo-item';
+
+import { expectExceptionsWithMatchingErrors } from 'testverse:util.ts';
 
 import type { InternalAuthBearerEntry } from '@-xun/next-api-common';
 
@@ -18,8 +18,7 @@ describe('::itemExists', () => {
 
     const col = (await getDb({ name: 'root' })).collection('auth');
     const item =
-      (await col.findOne<InternalAuthBearerEntry>()) ||
-      toss(new TrialError('assert failed'));
+      (await col.findOne<InternalAuthBearerEntry>()) || toss(new Error('assert failed'));
 
     await expect(itemExists(col, item._id)).resolves.toBeTrue();
     await expect(itemExists(col, new ObjectId())).resolves.toBeFalse();
@@ -38,8 +37,7 @@ describe('::itemExists', () => {
 
     const col = (await getDb({ name: 'root' })).collection('auth');
     const item =
-      (await col.findOne<InternalAuthBearerEntry>()) ||
-      toss(new TrialError('assert failed'));
+      (await col.findOne<InternalAuthBearerEntry>()) || toss(new Error('assert failed'));
 
     await expect(itemExists(col, item._id.toString())).resolves.toBeTrue();
     await expect(
@@ -52,8 +50,7 @@ describe('::itemExists', () => {
 
     const col = (await getDb({ name: 'root' })).collection('auth');
     const item =
-      (await col.findOne<InternalAuthBearerEntry>()) ||
-      toss(new TrialError('assert failed'));
+      (await col.findOne<InternalAuthBearerEntry>()) || toss(new Error('assert failed'));
 
     await expect(itemExists(col, item._id)).resolves.toBeTrue();
     await expect(
@@ -76,8 +73,7 @@ describe('::itemExists', () => {
 
     const col = (await getDb({ name: 'root' })).collection('auth');
     const item =
-      (await col.findOne<InternalAuthBearerEntry>()) ||
-      toss(new TrialError('assert failed'));
+      (await col.findOne<InternalAuthBearerEntry>()) || toss(new Error('assert failed'));
 
     await expect(itemExists(col, item._id, { excludeId: item._id })).rejects.toThrow(
       'cannot lookup an item by property "_id"'
@@ -110,8 +106,7 @@ describe('::itemExists', () => {
     ).resolves.toBeFalse();
 
     const item =
-      (await col.findOne<InternalAuthBearerEntry>()) ||
-      toss(new TrialError('assert failed'));
+      (await col.findOne<InternalAuthBearerEntry>()) || toss(new Error('assert failed'));
 
     await expect(itemExists(col, item._id)).resolves.toBeTrue();
 
