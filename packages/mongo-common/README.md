@@ -6,7 +6,7 @@
 
 <p align="center" width="100%">
 <!-- symbiote-template-region-end -->
-Common schema and data exports
+Common schema and data exports for mongo-utils
 <!-- symbiote-template-region-start 2 -->
 </p>
 

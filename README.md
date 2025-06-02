@@ -40,8 +40,8 @@ Utilities for a more pleasant DX with the mongodb driver.
 
 - [Packages](#packages)
 - [Usage](#usage)
-  - [Contributing and Support](#contributing-and-support)
-    - [Contributors](#contributors)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- symbiote-template-region-start 4 -->
@@ -53,16 +53,16 @@ Utilities for a more pleasant DX with the mongodb driver.
 
 <!-- symbiote-template-region-end -->
 
-- [@-xun/mongo-item][1] — Tools for quickly finding items and documents in
-  mongo.
-- [@-xun/mongo-common][2] — Common exports for mongo-utils.
-- [@-xun/mongo-oid-sort][3] — A predicate for sorting object ids like mongo
-  would.
-- [@-xun/mongo-schema][4] — Tools for sharing common schemas across utility
+- [@-xun/mongo-common][1] — Common schema and data exports for mongo-utils.
+- [@-xun/mongo-schema][2] — Tools for sharing common schemas across utility
   packages.
-- [@-xun/mongo-test][5] — Tools for testing mongo databases.
+- [@-xun/mongo-test][3] — Tools for testing mongo databases.
+- [@-xun/mongo-item][4] — Tools for quickly finding items and documents in
+  mongo.
+- [shared][5] — Common unpublished multiversal imports (beware the dual package
+  hazard!).
 
-# Usage
+## Usage
 
 Currently, @-xun/mongo-schema is the base package (though it depends on
 [@-xun/next-env][6]). It is responsible for ensuring each database used by the
@@ -175,9 +175,9 @@ specification. Contributions of any kind welcome!
 [x-repo-pr-compare]: https://github.com/Xunnamius/mongo-utils/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
-[1]: ./packages/mongo-item
-[2]: ./packages/mongo-common
-[3]: ./packages/mongo-object-id-pseudo-sort
-[4]: ./packages/mongo-schema
-[5]: ./packages/mongo-test
+[1]: ./packages/mongo-common
+[2]: ./packages/mongo-schema
+[3]: ./packages/mongo-test
+[4]: ./packages/mongo-item
+[5]: ./packages/shared
 [6]: https://github.com/Xunnamius/react-utils/packages/next-env

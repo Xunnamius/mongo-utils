@@ -19,11 +19,14 @@ module.exports = deepMergeConfig(
   }),
   {
     // Any custom configs here will be deep merged with moduleExport's result
-    env: {
-      test: {
-        plugins: ['babel-plugin-explicit-exports-references']
-      }
-    }
+    // You may wish to enable explicit exports references for improved testing
+    // DX, but be aware that it is currently a wee buggy as of 5/2025 (fix it!)
+    //
+    // env: {
+    //   test: {
+    //     plugins: ['babel-plugin-explicit-exports-references']
+    //   }
+    // }
   }
 );
 
@@ -36,29 +39,21 @@ function getBabelAliases() {
   return {
     '^multiverse\\+mongo\\x2dcommon:(.+)$': './packages/mongo-common/src/$1',
     '^multiverse\\+mongo\\x2ditem:(.+)$': './packages/mongo-item/src/$1',
-    '^multiverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
-      './packages/mongo-object-id-pseudo-sort/src/$1',
     '^multiverse\\+mongo\\x2dschema:(.+)$': './packages/mongo-schema/src/$1',
     '^multiverse\\+mongo\\x2dtest:(.+)$': './packages/mongo-test/src/$1',
     '^multiverse\\+shared:(.+)$': './packages/shared/src/$1',
     '^multiverse\\+mongo\\x2dcommon$': './packages/mongo-common/src/index.js',
     '^multiverse\\+mongo\\x2ditem$': './packages/mongo-item/src/index.js',
-    '^multiverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort$':
-      './packages/mongo-object-id-pseudo-sort/src/index.js',
     '^multiverse\\+mongo\\x2dschema$': './packages/mongo-schema/src/index.js',
     '^multiverse\\+mongo\\x2dtest$': './packages/mongo-test/src/index.js',
     '^multiverse\\+shared$': './packages/shared/src/index.js',
     '^universe\\+mongo\\x2dcommon:(.+)$': './packages/mongo-common/src/$1',
     '^universe\\+mongo\\x2ditem:(.+)$': './packages/mongo-item/src/$1',
-    '^universe\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
-      './packages/mongo-object-id-pseudo-sort/src/$1',
     '^universe\\+mongo\\x2dschema:(.+)$': './packages/mongo-schema/src/$1',
     '^universe\\+mongo\\x2dtest:(.+)$': './packages/mongo-test/src/$1',
     '^universe\\+shared:(.+)$': './packages/shared/src/$1',
     '^universe\\+mongo\\x2dcommon$': './packages/mongo-common/src/index.js',
     '^universe\\+mongo\\x2ditem$': './packages/mongo-item/src/index.js',
-    '^universe\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort$':
-      './packages/mongo-object-id-pseudo-sort/src/index.js',
     '^universe\\+mongo\\x2dschema$': './packages/mongo-schema/src/index.js',
     '^universe\\+mongo\\x2dtest$': './packages/mongo-test/src/index.js',
     '^universe\\+shared$': './packages/shared/src/index.js',
@@ -66,8 +61,6 @@ function getBabelAliases() {
     '^universe$': './src/index.js',
     '^testverse\\+mongo\\x2dcommon:(.+)$': './packages/mongo-common/test/$1',
     '^testverse\\+mongo\\x2ditem:(.+)$': './packages/mongo-item/test/$1',
-    '^testverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
-      './packages/mongo-object-id-pseudo-sort/test/$1',
     '^testverse\\+mongo\\x2dschema:(.+)$': './packages/mongo-schema/test/$1',
     '^testverse\\+mongo\\x2dtest:(.+)$': './packages/mongo-test/test/$1',
     '^testverse\\+shared:(.+)$': './packages/shared/test/$1',
@@ -75,8 +68,6 @@ function getBabelAliases() {
     '^typeverse:(.+)$': './types/$1',
     '^rootverse\\+mongo\\x2dcommon:(.+)$': './packages/mongo-common/$1',
     '^rootverse\\+mongo\\x2ditem:(.+)$': './packages/mongo-item/$1',
-    '^rootverse\\+mongo\\x2dobject\\x2did\\x2dpseudo\\x2dsort:(.+)$':
-      './packages/mongo-object-id-pseudo-sort/$1',
     '^rootverse\\+mongo\\x2dschema:(.+)$': './packages/mongo-schema/$1',
     '^rootverse\\+mongo\\x2dtest:(.+)$': './packages/mongo-test/$1',
     '^rootverse\\+shared:(.+)$': './packages/shared/$1',
