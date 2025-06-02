@@ -73,8 +73,9 @@ For that reason, @-xun/mongo-schema is relied upon by @-xun/mongo-test, which
 contains tools for manipulating the software's databases while under test.
 
 @-xun/mongo-common relies on both @-xun/mongo-schema and @-xun/mongo-test for
-their types, and contains common baseline schemas (along with their dummy
-testing data) used in some way by most of my mongo-related software.
+their types (as well as several @-xun/next-\* packages), and contains common
+baseline schemas (along with their dummy testing data) used in some way by most
+of my mongo-related software.
 
 @-xun/mongo-item and @-xun/mongo-oid-sort are standalone tools.
 
