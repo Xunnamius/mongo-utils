@@ -66,7 +66,7 @@
     "@-xun/mongo-schema": "^1.0.1",
     "@-xun/next-env": "^1.0.2",
     "core-js": "^3.42.0",
-    "mongodb": "^6.16.0",
+    "mongodb": "^6.17.0",
     "mongodb-memory-server": "^10.1.4",
     "rejoinder": "^1.2.5"
   },
