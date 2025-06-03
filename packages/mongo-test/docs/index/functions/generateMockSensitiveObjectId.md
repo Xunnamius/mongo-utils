@@ -8,7 +8,7 @@
 
 > **generateMockSensitiveObjectId**(): `ObjectId`
 
-Defined in: [mongo-test/src/index.ts:239](https://github.com/Xunnamius/mongo-utils/blob/7b7238ccb96b3e04fca5f7608ea8476890bbb153/packages/mongo-test/src/index.ts#L239)
+Defined in: [mongo-test/src/index.ts:239](https://github.com/Xunnamius/mongo-utils/blob/9457593fbddb1a2627beb438b8436c6e06424188/packages/mongo-test/src/index.ts#L239)
 
 Creates an ObjectId by explicitly passing `mockDateNowMs` as
 the inception time, which is the same thing that ObjectId does
