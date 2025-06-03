@@ -8,12 +8,16 @@
 
 > **getAliasFromName**(`nameActual`): `string`[]
 
-Defined in: [mongo-schema/src/index.ts:69](https://github.com/Xunnamius/mongo-utils/blob/338b7589e5e51031f1d3bb7a988f4892cb8fc0ef/packages/mongo-schema/src/index.ts#L69)
+Defined in: [mongo-schema/src/index.ts:76](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/mongo-schema/src/index.ts#L76)
 
-Accepts a database name (or an alias) and returns one or more aliases. If the
-named database has no aliases listed in the schema, said database name is
-returned as a single-element array. If said database name is not listed in
+Accepts a database name (or an alias) and returns one or more aliases.
+
+If the named database has no aliases listed in the schema, said database name
+is returned as a single-element array. If said database name is not listed in
 the schema, an error is thrown.
+
+That is: if this function doesn't throw, `nameActual` _must_ (1) be in
+`schema.databases` and (2) map to zero or more aliases.
 
 ## Parameters
 

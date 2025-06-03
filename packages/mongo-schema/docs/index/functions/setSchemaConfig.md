@@ -8,7 +8,7 @@
 
 > **setSchemaConfig**(`schemaFn`): `void`
 
-Defined in: [mongo-schema/src/index.ts:27](https://github.com/Xunnamius/mongo-utils/blob/338b7589e5e51031f1d3bb7a988f4892cb8fc0ef/packages/mongo-schema/src/index.ts#L27)
+Defined in: [mongo-schema/src/index.ts:27](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/mongo-schema/src/index.ts#L27)
 
 Sets global schema singleton (which already includes some built-in defaults).
 
