@@ -68,7 +68,7 @@
   "devDependencies": {
     "@-xun/fs": "^2.0.0",
     "@-xun/mongo-schema": "^1.0.1",
-    "@-xun/mongo-test": "^1.0.0",
+    "@-xun/mongo-test": "^1.0.1",
     "rejoinder": "^1.2.5",
     "toss-expression": "^0.1.2"
   },
