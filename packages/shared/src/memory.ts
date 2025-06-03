@@ -8,7 +8,7 @@ const global = globalThis as unknown as { [$memorySymbol]?: SharedMemory };
 const debug = createDebugLogger({ namespace: 'mongo-shared:memory' });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Functionable<T> = T | ((...args: any[]) => T);
+export type Functionable<T> = T | ((...args: any[]) => T);
 
 /**
  * A shared cache of connection, server schema, and database state.

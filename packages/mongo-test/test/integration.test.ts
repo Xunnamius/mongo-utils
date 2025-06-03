@@ -3,9 +3,9 @@ import { getClient } from '@-xun/mongo-schema';
 import { setSchemaConfig } from 'universe+mongo-schema';
 import { setDummyData } from 'universe+mongo-test';
 
-import { setupMemoryServerOverride } from '@-xun/mongo-test';
+import { mockDateNowMs } from 'testverse:util.ts';
 
-const now = Date.now();
+import { setupMemoryServerOverride } from '@-xun/mongo-test';
 
 beforeEach(() => {
   setSchemaConfig(() => {
@@ -39,11 +39,11 @@ beforeEach(() => {
   setDummyData(() => {
     return {
       'db-1': {
-        _generatedAt: now,
+        _generatedAt: mockDateNowMs,
         col: [{ item: 1 }, { item: 2 }, { item: 3 }]
       },
       'db-2': {
-        _generatedAt: now,
+        _generatedAt: mockDateNowMs,
         'col-1': [{ item: 'a' }, { item: 'b' }],
         'col-2': [{ item: 'c' }],
         'col-3': [{ key: 1, item: 'd' }]

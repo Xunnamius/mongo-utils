@@ -10,7 +10,8 @@ import {
   getDb,
   getNameFromAlias,
   getSchemaConfig,
-  initializeDb
+  initializeDb,
+  setSchemaConfig
 } from '@-xun/mongo-schema';
 
 import { getEnv } from '@-xun/next-env';
@@ -23,7 +24,8 @@ import { getFromSharedMemory, setToSharedMemory } from 'multiverse+shared:memory
 import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
 import type { Document } from 'mongodb';
-import type { DummyData } from 'multiverse+shared:schema.ts';
+import type { Functionable } from 'multiverse+shared:memory.ts';
+import type { DbSchema, DummyData } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-test' });
 export type { DummyData };
@@ -117,17 +119,47 @@ export async function hydrateDbWithDummyData({
 /**
  * Setup per-test versions of the mongodb client and database connections using
  * jest lifecycle hooks.
+ *
+ * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, it must
+ * be called _before_ `setupMemoryServerOverride`!
  */
-export function setupMemoryServerOverride(params?: {
+export function setupMemoryServerOverride({
+  defer,
+  schema,
+  data
+}: {
   /**
-   * If `true`, `beforeEach` and `afterEach` lifecycle hooks are skipped and the
-   * database is initialized and hydrated once before all tests are run. **In
-   * this mode, all tests will share the same database state!**
+   * If `true`, the `beforeEach` and `afterEach` lifecycle hooks are skipped and
+   * the database is initialized and hydrated once before all tests are run.
+   * **In this mode, all tests will share the same database state!**
    *
    * @default false
    */
   defer?: boolean;
-}) {
+  /**
+   * Passed to `setSchemaConfig` at the appropriate point: during
+   * `jest.beforeEach` and `jest.beforeAll` but before this function interacts
+   * with the database.
+   *
+   * This data is only written once during `jest.beforeAll` if `defer` is
+   * `true`.
+   *
+   * If calling `setSchemaConfig` manually, it must be called _before_
+   * `setupMemoryServerOverride`!
+   */
+  schema?: Functionable<DbSchema>;
+  /**
+   * Passed to `setDummyData` at the appropriate point: during `jest.beforeEach`
+   * and `jest.beforeAll` but before this function interacts with the database.
+   *
+   * This data is only written once during `jest.beforeAll` if `defer` is
+   * `true`.
+   *
+   * If calling `setDummyData` manually, it must be called _before_
+   * `setupMemoryServerOverride`!
+   */
+  data?: Functionable<DummyData>;
+} = {}) {
   // ? If an error (like a bad schema config or misconfigured dummy dataset)
   // ? occurs at any point (e.g. in one of the hooks), the other hooks should
   // ? become noops. Without this, test database state may leak outside the test
@@ -186,6 +218,7 @@ export function setupMemoryServerOverride(params?: {
       if (errored) {
         debug.warn('"beforeAll" jest lifecycle hook was skipped due to previous errors');
       } else {
+        setSchemaAndData();
         await server.ensureInstance();
         const uri = server.getUri();
         debug(`connecting to in-memory dummy mongo server at ${uri}`);
@@ -195,7 +228,7 @@ export function setupMemoryServerOverride(params?: {
         }
 
         setToSharedMemory('client', await MongoClient.connect(uri));
-        if (params?.defer) await reinitializeServer();
+        if (defer) await reinitializeServer();
       }
     } catch (error) {
       errored = true;
@@ -204,8 +237,11 @@ export function setupMemoryServerOverride(params?: {
     }
   });
 
-  if (!params?.defer) {
-    beforeEach(reinitializeServer);
+  if (!defer) {
+    beforeEach(async () => {
+      setSchemaAndData();
+      await reinitializeServer();
+    });
   }
 
   afterAll(async () => {
@@ -217,8 +253,20 @@ export function setupMemoryServerOverride(params?: {
     /**
      * Reset the dummy MongoDb server databases back to their initial states.
      */
-    reinitializeServer
+    reinitializeServer,
+    schema,
+    data
   };
+
+  function setSchemaAndData() {
+    if (schema) {
+      setSchemaConfig(typeof schema === 'function' ? schema : () => schema);
+    }
+
+    if (data) {
+      setDummyData(typeof data === 'function' ? data : () => data);
+    }
+  }
 }
 
 /**

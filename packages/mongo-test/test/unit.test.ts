@@ -18,6 +18,7 @@ import { ErrorMessage } from 'universe+mongo-test:error.ts';
 import {
   asMocked,
   makeMockedMongoConnectMethod,
+  mockDateNowMs,
   mockEnvFactory
 } from 'testverse:util.ts';
 
@@ -28,7 +29,6 @@ import type { TestDbResult } from 'testverse:util.ts';
 jest.mock('mongodb');
 jest.mock('mongodb-memory-server');
 
-const now = Date.now();
 const withMockedEnv = mockEnvFactory({ NODE_ENV: 'test' });
 
 const mockMongoClient = asMocked(MongoClient);
@@ -66,11 +66,11 @@ const expectedSchema: DbSchema = {
 
 const expectedData: DummyData = {
   'fake-db-1': {
-    _generatedAt: now,
+    _generatedAt: mockDateNowMs,
     col: [{ item: 1 }, { item: 2 }, { item: 3 }]
   },
   'fake-db-2': {
-    _generatedAt: now,
+    _generatedAt: mockDateNowMs,
     'col-1': [{ item: 'a' }, { item: 'b' }]
   }
 };
@@ -175,11 +175,11 @@ describe('::hydrateDbWithDummyData', () => {
     setDummyData(() => {
       return {
         'fake-db-1': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           col: [{ item: 1 }, { item: 2 }, { item: 3 }]
         },
         'fake-alias-3': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           'col-1': [{ item: 'a' }, { item: 'b' }]
         }
       };
@@ -203,15 +203,15 @@ describe('::hydrateDbWithDummyData', () => {
     setDummyData(() => {
       return {
         'fake-db-1': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           col: [{ item: 1 }, { item: 2 }, { item: 3 }]
         },
         'fake-db-2': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           'col-1': [{ item: 'a' }, { item: 'b' }]
         },
         'fake-alias-3': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           'col-1': [{ item: 'a' }, { item: 'b' }]
         }
       };
@@ -232,15 +232,15 @@ describe('::hydrateDbWithDummyData', () => {
     setDummyData(() => {
       return {
         'fake-db-1': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           col: [{ item: 1 }, { item: 2 }, { item: 3 }]
         },
         'fake-alias-2': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           'col-1': [{ item: 'a' }, { item: 'b' }]
         },
         'fake-alias-3': {
-          _generatedAt: now,
+          _generatedAt: mockDateNowMs,
           'col-1': [{ item: 'a' }, { item: 'b' }]
         }
       };
@@ -338,8 +338,10 @@ describe('::setupMemoryServerOverride', () => {
     }
   });
 
-  it('runs appropriate functionality at the appropriate points', async () => {
+  it('runs appropriate functionality at the appropriate points with and without args', async () => {
     expect.hasAssertions();
+
+    resetSharedMemory();
 
     const oldBeforeAll = beforeAll;
     const oldBeforeEach = beforeEach;
@@ -375,7 +377,16 @@ describe('::setupMemoryServerOverride', () => {
         // eslint-disable-next-line no-global-assign
         afterAll = jest.fn();
 
-        setupMemoryServerOverride();
+        expect(() => getSchemaConfig()).toThrow();
+        expect(() => getDummyData()).toThrow();
+
+        setupMemoryServerOverride({
+          schema: expectedSchema,
+          data: expectedData
+        });
+
+        expect(() => getSchemaConfig()).toThrow();
+        expect(() => getDummyData()).toThrow();
 
         expect(beforeAll).toHaveBeenCalledTimes(1);
         expect(beforeEach).toHaveBeenCalledTimes(1);
@@ -384,6 +395,9 @@ describe('::setupMemoryServerOverride', () => {
         await asMocked(beforeAll).mock.calls[0]![0](
           undefined as unknown as jest.DoneCallback
         );
+
+        expect(() => getSchemaConfig()).not.toThrow();
+        expect(() => getDummyData()).not.toThrow();
 
         expect(destroySpy).not.toHaveBeenCalled();
         expect(initializeDbSpy).not.toHaveBeenCalled();
@@ -422,6 +436,9 @@ describe('::setupMemoryServerOverride', () => {
 
         expect(closeClientSpy).toHaveBeenCalledTimes(2);
         expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalledTimes(2);
+
+        expect(() => getSchemaConfig()).not.toThrow();
+        expect(() => getDummyData()).not.toThrow();
       });
     } finally {
       // eslint-disable-next-line no-global-assign
