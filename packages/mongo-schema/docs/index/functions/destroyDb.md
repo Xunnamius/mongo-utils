@@ -8,7 +8,7 @@
 
 > **destroyDb**(`__namedParameters`): `Promise`\<`boolean`\>
 
-Defined in: [mongo-schema/src/index.ts:193](https://github.com/Xunnamius/mongo-utils/blob/cbbfc60f0aa219fa5ddd4eb8cc805a007ebd4902/packages/mongo-schema/src/index.ts#L193)
+Defined in: [mongo-schema/src/index.ts:193](https://github.com/Xunnamius/mongo-utils/blob/a42d1f3bf6df8ecad890c565a46f81f53a45682a/packages/mongo-schema/src/index.ts#L193)
 
 Drops a database, destroying its collections. If the database does not exist
 before calling this function, it will be created first then dropped.
