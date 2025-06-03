@@ -1,11 +1,9 @@
 import { getClient } from '@-xun/mongo-schema';
 
 import { setSchemaConfig } from 'universe+mongo-schema';
-import { setDummyData } from 'universe+mongo-test';
+import { setDummyData, setupMemoryServerOverride } from 'universe+mongo-test';
 
 import { mockDateNowMs } from 'testverse:util.ts';
-
-import { setupMemoryServerOverride } from '@-xun/mongo-test';
 
 beforeEach(() => {
   setSchemaConfig(() => {

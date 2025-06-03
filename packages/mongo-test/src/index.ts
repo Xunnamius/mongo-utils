@@ -246,7 +246,7 @@ export function setupMemoryServerOverride({
 
   afterAll(async () => {
     await closeClient();
-    await server.stop({ force: true });
+    await server.stop({ doCleanup: true, force: true });
   });
 
   return {
