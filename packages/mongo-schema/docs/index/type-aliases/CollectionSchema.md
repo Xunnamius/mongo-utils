@@ -8,7 +8,7 @@
 
 > **CollectionSchema** = `object`
 
-Defined in: [shared/src/schema.ts:8](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/shared/src/schema.ts#L8)
+Defined in: [shared/src/schema.ts:8](https://github.com/Xunnamius/mongo-utils/blob/cbbfc60f0aa219fa5ddd4eb8cc805a007ebd4902/packages/shared/src/schema.ts#L8)
 
 A configuration object representing a MongoDB collection.
 
@@ -18,7 +18,7 @@ A configuration object representing a MongoDB collection.
 
 > `optional` **createOptions**: `Parameters`\<`Db`\[`"createCollection"`\]\>\[`1`\]
 
-Defined in: [shared/src/schema.ts:17](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/shared/src/schema.ts#L17)
+Defined in: [shared/src/schema.ts:17](https://github.com/Xunnamius/mongo-utils/blob/cbbfc60f0aa219fa5ddd4eb8cc805a007ebd4902/packages/shared/src/schema.ts#L17)
 
 An object passed directly to the MongoDB `createCollection` function via
 the `createOptions` parameter.
@@ -29,7 +29,7 @@ the `createOptions` parameter.
 
 > `optional` **indices**: `object`[]
 
-Defined in: [shared/src/schema.ts:22](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/shared/src/schema.ts#L22)
+Defined in: [shared/src/schema.ts:22](https://github.com/Xunnamius/mongo-utils/blob/cbbfc60f0aa219fa5ddd4eb8cc805a007ebd4902/packages/shared/src/schema.ts#L22)
 
 An object representing indices to be created on the MongoDB collection via
 `createIndex`.
@@ -48,6 +48,6 @@ An object representing indices to be created on the MongoDB collection via
 
 > **name**: `string`
 
-Defined in: [shared/src/schema.ts:12](https://github.com/Xunnamius/mongo-utils/blob/24af83c1eb4ad61ca8000850d32c8441db798bb0/packages/shared/src/schema.ts#L12)
+Defined in: [shared/src/schema.ts:12](https://github.com/Xunnamius/mongo-utils/blob/cbbfc60f0aa219fa5ddd4eb8cc805a007ebd4902/packages/shared/src/schema.ts#L12)
 
 The valid MongoDB name of the collection.
