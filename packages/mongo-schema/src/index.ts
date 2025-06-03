@@ -129,7 +129,7 @@ export async function closeClient({ clearCache = true }: { clearCache?: boolean 
   /* istanbul ignore else */
   if (client) {
     debug('closing server connection');
-    await client.close(true);
+    await client.close();
   }
 
   if (clearCache) {
