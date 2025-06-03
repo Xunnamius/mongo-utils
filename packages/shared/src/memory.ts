@@ -71,10 +71,7 @@ export function setToSharedMemory<T extends keyof SharedMemory>(
  * Resets shared memory to its initial state.
  */
 export function resetSharedMemory() {
-  debug(
-    'shared memory reset (will fetched shared memory immediately after this) (was: %O)',
-    global[$memorySymbol]
-  );
+  debug('shared memory reset to blank state (was: %O)', global[$memorySymbol]);
 
   global[$memorySymbol] = undefined;
   getSharedMemoryContainer();
