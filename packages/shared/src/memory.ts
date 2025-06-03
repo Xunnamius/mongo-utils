@@ -4,7 +4,7 @@ import type { Db, MongoClient } from 'mongodb';
 import type { DbSchema, DummyData } from 'universe+shared:schema.ts';
 
 const $memorySymbol = Symbol.for('@-xun/mongo:memory');
-const global = globalThis as unknown as { [$memorySymbol]: SharedMemory };
+const global = globalThis as unknown as { [$memorySymbol]?: SharedMemory };
 const debug = createDebugLogger({ namespace: 'mongo-shared:memory' });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,26 +61,30 @@ export function setToSharedMemory<T extends keyof SharedMemory>(
   value: SharedMemory[T]
 ) {
   const memory = getSharedMemoryContainer();
+  const oldValue = memory[key];
   memory[key] = value;
 
-  debug('shared memory set: %O => %O', key, value);
+  debug('shared memory set: %O set from %O => %O', key, oldValue, value);
 }
 
 /**
  * Resets shared memory to its initial state.
  */
 export function resetSharedMemory() {
-  // @ts-expect-error: it will be restored at next call of getMemoryContainer
+  debug(
+    'shared memory reset (will fetched shared memory immediately after this) (was: %O)',
+    global[$memorySymbol]
+  );
+
   global[$memorySymbol] = undefined;
   getSharedMemoryContainer();
-
-  debug('shared memory reset');
 }
 
 /**
  * Returns a copy of the initial state of shared memory.
  */
 function getInitialSharedMemoryState(): SharedMemory {
+  debug('created new initial shared memory state');
   return {
     client: undefined,
     databases: {},
@@ -90,6 +94,5 @@ function getInitialSharedMemoryState(): SharedMemory {
 }
 
 function getSharedMemoryContainer() {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return (global[$memorySymbol] ??= getInitialSharedMemoryState());
 }
