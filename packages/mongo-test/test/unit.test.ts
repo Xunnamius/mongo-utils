@@ -15,10 +15,15 @@ import {
 
 import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
-import { asMocked, mockEnvFactory } from 'testverse:util.ts';
+import {
+  asMocked,
+  makeMockedMongoConnectMethod,
+  mockEnvFactory
+} from 'testverse:util.ts';
 
 import type { DbSchema } from '@-xun/mongo-schema';
 import type { DummyData } from 'multiverse+shared:schema.ts';
+import type { TestDbResult } from 'testverse:util.ts';
 
 jest.mock('mongodb');
 jest.mock('mongodb-memory-server');
@@ -74,49 +79,7 @@ beforeEach(() => {
   setSchemaConfig(() => expectedSchema);
   setDummyData(() => expectedData);
 
-  mockMongoClient.connect = jest.fn();
-  mockMongoClient.connect.mockImplementation((url: string) =>
-    Promise.resolve(
-      new (class {
-        url = url;
-
-        db(name: string) {
-          return new (class {
-            parentUrl = url;
-            databaseName = name;
-            dropDatabase;
-            createCollection;
-            createIndex;
-            collection;
-            admin;
-
-            constructor() {
-              this.dropDatabase = jest.fn();
-              this.createIndex = jest.fn();
-              // ? Reuse this.createIndex method for easy access to mock
-              this.collection = jest.fn(() => ({ insertMany: this.createIndex }));
-              this.createCollection = jest.fn(() =>
-                Promise.resolve({ createIndex: this.createIndex })
-              );
-              this.admin = jest.fn(() => ({
-                listDatabases: jest.fn(() => ({
-                  databases: [
-                    { name: 'auth' },
-                    { name: 'request-log' },
-                    { name: 'limited-log' }
-                  ]
-                }))
-              }));
-            }
-          })();
-        }
-
-        close() {
-          return url;
-        }
-      })() as unknown as MongoClient
-    )
-  );
+  mockMongoClient.connect = makeMockedMongoConnectMethod();
 
   // eslint-disable-next-line jest/unbound-method
   asMocked(mockedMongoMemoryServer.getUri).mockImplementation(() => 'mongo-ms-uri:6666');
@@ -127,7 +90,7 @@ afterEach(() => {
   resetSharedMemory();
 });
 
-describe('::getDummyData', () => {
+describe('::getDummyData (and ::setDummyData)', () => {
   it('dynamically imports customizations', async () => {
     expect.hasAssertions();
 
@@ -146,15 +109,14 @@ describe('::hydrateDbWithDummyData', () => {
   it('fills a database with dummy data (multi-item collections)', async () => {
     expect.hasAssertions();
 
-    const db = await getDb({ name: 'fake-db-1' });
+    const db = (await getDb({ name: 'fake-db-1' })) as TestDbResult;
 
     await expect(hydrateDbWithDummyData({ name: 'fake-db-1' })).resolves.toBeUndefined();
 
     Object.entries(getDummyData()['fake-db-1']!).forEach(([colName, colData]) => {
       if (colName !== '_generatedAt') {
         expect(db.collection).toHaveBeenCalledWith(colName);
-        // ? The createIndex method is reused for easy access to the insertMany mock
-        expect(db.createIndex).toHaveBeenCalledWith(colData);
+        expect(db.insertMany_).toHaveBeenCalledWith(colData);
       }
     });
   });
@@ -182,19 +144,18 @@ describe('::hydrateDbWithDummyData', () => {
       };
     });
 
-    const db = await getDb({ name: 'fake-db-1' });
+    const db = (await getDb({ name: 'fake-db-1' })) as TestDbResult;
 
     await expect(hydrateDbWithDummyData({ name: 'fake-db-1' })).resolves.toBeUndefined();
 
     expect(db.collection).toHaveBeenCalledWith('col');
-    // ? The createIndex method is reused for easy access to the insertMany mock
-    expect(db.createIndex).toHaveBeenCalledWith([getDummyData()['fake-db-1']!.col]);
+    expect(db.insertMany_).toHaveBeenCalledWith([getDummyData()['fake-db-1']!.col]);
   });
 
   it('accepts an alias as a name', async () => {
     expect.hasAssertions();
 
-    const db = await getDb({ name: 'fake-alias-1' });
+    const db = (await getDb({ name: 'fake-alias-1' })) as TestDbResult;
 
     await expect(
       hydrateDbWithDummyData({ name: 'fake-alias-1' })
@@ -203,8 +164,7 @@ describe('::hydrateDbWithDummyData', () => {
     Object.entries(getDummyData()['fake-db-1']!).forEach(([colName, colData]) => {
       if (colName !== '_generatedAt') {
         expect(db.collection).toHaveBeenCalledWith(colName);
-        // ? The createIndex method is reused for easy access to the insertMany mock
-        expect(db.createIndex).toHaveBeenCalledWith(colData);
+        expect(db.insertMany_).toHaveBeenCalledWith(colData);
       }
     });
   });
@@ -225,15 +185,14 @@ describe('::hydrateDbWithDummyData', () => {
       };
     });
 
-    const db = await getDb({ name: 'fake-db-2' });
+    const db = (await getDb({ name: 'fake-db-2' })) as TestDbResult;
 
     await expect(hydrateDbWithDummyData({ name: 'fake-db-2' })).resolves.toBeUndefined();
 
     Object.entries(getDummyData()['fake-alias-3']!).forEach(([colName, colData]) => {
       if (colName !== '_generatedAt') {
         expect(db.collection).toHaveBeenCalledWith(colName);
-        // ? The createIndex method is reused for easy access to the insertMany mock
-        expect(db.createIndex).toHaveBeenCalledWith(colData);
+        expect(db.insertMany_).toHaveBeenCalledWith(colData);
       }
     });
   });

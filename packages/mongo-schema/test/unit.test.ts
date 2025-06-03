@@ -16,9 +16,14 @@ import {
 
 import { ErrorMessage } from 'universe+mongo-schema:error.ts';
 
-import { asMocked, mockEnvFactory } from 'testverse:util.ts';
+import {
+  asMocked,
+  makeMockedMongoConnectMethod,
+  mockEnvFactory
+} from 'testverse:util.ts';
 
 import type { DbSchema } from 'universe+mongo-schema';
+import type { TestDbResult } from 'testverse:util.ts';
 
 jest.mock('mongodb');
 
@@ -56,50 +61,7 @@ const expectedSchema: DbSchema = {
 
 beforeEach(() => {
   setSchemaConfig(() => expectedSchema);
-
-  mockMongoClient.connect = jest.fn();
-  mockMongoClient.connect.mockImplementation((url: string) =>
-    Promise.resolve(
-      new (class {
-        url = url;
-
-        db(name: string) {
-          return new (class {
-            parentUrl = url;
-            databaseName = name;
-            dropDatabase;
-            createCollection;
-            createIndex;
-            collection;
-            admin;
-
-            constructor() {
-              this.dropDatabase = jest.fn();
-              this.createIndex = jest.fn();
-              // ? Reuse this.createIndex method for easy access to mock
-              this.collection = jest.fn(() => ({ insertMany: this.createIndex }));
-              this.createCollection = jest.fn(() =>
-                Promise.resolve({ createIndex: this.createIndex })
-              );
-              this.admin = jest.fn(() => ({
-                listDatabases: jest.fn(() => ({
-                  databases: [
-                    { name: 'auth' },
-                    { name: 'request-log' },
-                    { name: 'limited-log' }
-                  ]
-                }))
-              }));
-            }
-          })();
-        }
-
-        close() {
-          return url;
-        }
-      })() as unknown as MongoClient
-    )
-  );
+  mockMongoClient.connect = makeMockedMongoConnectMethod();
 });
 
 afterEach(() => {
@@ -303,7 +265,7 @@ describe('::initializeDb', () => {
 
             if (col.indices) {
               col.indices.forEach((spec) =>
-                expect(db2.createIndex).toHaveBeenCalledWith(
+                expect((db2 as TestDbResult).createIndex_).toHaveBeenCalledWith(
                   spec.spec,
                   spec.options || {}
                 )
