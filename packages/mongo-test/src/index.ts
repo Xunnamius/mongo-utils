@@ -28,7 +28,8 @@ import type { Functionable } from 'multiverse+shared:memory.ts';
 import type { DbSchema, DummyData } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-test' });
-export type { DummyData };
+
+export type { DummyData, Functionable };
 
 /**
  * Sets global dummy data singleton (which already includes some built-in
@@ -37,7 +38,7 @@ export type { DummyData };
  * This function must be called before any call to `getDummyData` or an error
  * will be thrown.
  */
-export function setDummyData(schemaFn: () => DummyData) {
+export function setDummyData(schemaFn: Functionable<DummyData>) {
   debug('setting schema configuration to memory');
   setToSharedMemory('dummy', schemaFn);
 }

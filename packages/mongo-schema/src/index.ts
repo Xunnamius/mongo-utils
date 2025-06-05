@@ -12,11 +12,12 @@ import {
 
 import { ErrorMessage } from 'universe+mongo-schema:error.ts';
 
+import type { Functionable } from 'multiverse+shared:memory.ts';
 import type { CollectionSchema, DbSchema } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-schema' });
 
-export type { CollectionSchema, DbSchema };
+export type { CollectionSchema, DbSchema, Functionable };
 
 /**
  * Sets global schema singleton (which already includes some built-in defaults).
@@ -24,7 +25,7 @@ export type { CollectionSchema, DbSchema };
  * This function must be called before any call to `getSchemaConfig` or an error
  * will be thrown.
  */
-export function setSchemaConfig(schemaFn: () => DbSchema) {
+export function setSchemaConfig(schemaFn: Functionable<DbSchema>) {
   debug('setting schema configuration to memory');
   setToSharedMemory('schema', schemaFn);
 }
