@@ -10,6 +10,7 @@
 
 - [CollectionSchema](type-aliases/CollectionSchema.md)
 - [DbSchema](type-aliases/DbSchema.md)
+- [Functionable](type-aliases/Functionable.md)
 
 ## Functions
 
