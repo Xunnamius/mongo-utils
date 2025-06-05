@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`__namedParameters`): `object`
 
-Defined in: [mongo-test/src/index.ts:126](https://github.com/Xunnamius/mongo-utils/blob/c274944be604d61c0da7398d0086c9ff8091cd9f/packages/mongo-test/src/index.ts#L126)
+Defined in: [mongo-test/src/index.ts:127](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/index.ts#L127)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
@@ -22,7 +22,7 @@ be called _before_ `setupMemoryServerOverride`!
 
 #### data?
 
-`Functionable`\<[`DummyData`](../type-aliases/DummyData.md)\>
+[`Functionable`](../type-aliases/Functionable.md)\<[`DummyData`](../type-aliases/DummyData.md)\>
 
 Passed to `setDummyData` at the appropriate point: during `jest.beforeEach`
 and `jest.beforeAll` but before this function interacts with the database.
@@ -49,7 +49,7 @@ false
 
 #### schema?
 
-`Functionable`\<`DbSchema`\>
+[`Functionable`](../type-aliases/Functionable.md)\<`DbSchema`\>
 
 Passed to `setSchemaConfig` at the appropriate point: during
 `jest.beforeEach` and `jest.beforeAll` but before this function interacts
@@ -65,7 +65,7 @@ If calling `setSchemaConfig` manually, it must be called _before_
 
 ### data
 
-> **data**: `undefined` \| `Functionable`\<[`DummyData`](../type-aliases/DummyData.md)\>
+> **data**: `undefined` \| [`Functionable`](../type-aliases/Functionable.md)\<[`DummyData`](../type-aliases/DummyData.md)\>
 
 ### reinitializeServer()
 
@@ -81,4 +81,4 @@ Reset the dummy MongoDb server databases back to their initial states.
 
 ### schema
 
-> **schema**: `undefined` \| `Functionable`\<`DbSchema`\>
+> **schema**: `undefined` \| [`Functionable`](../type-aliases/Functionable.md)\<`DbSchema`\>

@@ -8,7 +8,7 @@
 
 > `const` **ErrorMessage**: `object`
 
-Defined in: [mongo-test/src/error.ts:5](https://github.com/Xunnamius/mongo-utils/blob/c274944be604d61c0da7398d0086c9ff8091cd9f/packages/mongo-test/src/error.ts#L5)
+Defined in: [mongo-test/src/error.ts:5](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/error.ts#L5)
 
 A collection of possible error and warning messages.
 

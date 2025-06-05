@@ -8,7 +8,7 @@
 
 > **getDummyData**(): [`DummyData`](../type-aliases/DummyData.md)
 
-Defined in: [mongo-test/src/index.ts:48](https://github.com/Xunnamius/mongo-utils/blob/c274944be604d61c0da7398d0086c9ff8091cd9f/packages/mongo-test/src/index.ts#L48)
+Defined in: [mongo-test/src/index.ts:49](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/index.ts#L49)
 
 Imports `getDummyData` from "configverse/get-dummy-data" and calls it.
 

@@ -8,7 +8,7 @@
 
 > **setDummyData**(`schemaFn`): `void`
 
-Defined in: [mongo-test/src/index.ts:40](https://github.com/Xunnamius/mongo-utils/blob/c274944be604d61c0da7398d0086c9ff8091cd9f/packages/mongo-test/src/index.ts#L40)
+Defined in: [mongo-test/src/index.ts:41](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/index.ts#L41)
 
 Sets global dummy data singleton (which already includes some built-in
 defaults).
@@ -20,7 +20,7 @@ will be thrown.
 
 ### schemaFn
 
-() => [`DummyData`](../type-aliases/DummyData.md)
+[`Functionable`](../type-aliases/Functionable.md)\<[`DummyData`](../type-aliases/DummyData.md)\>
 
 ## Returns
 

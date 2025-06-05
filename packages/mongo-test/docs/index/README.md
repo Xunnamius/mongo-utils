@@ -9,6 +9,7 @@
 ## Type Aliases
 
 - [DummyData](type-aliases/DummyData.md)
+- [Functionable](type-aliases/Functionable.md)
 
 ## Functions
 

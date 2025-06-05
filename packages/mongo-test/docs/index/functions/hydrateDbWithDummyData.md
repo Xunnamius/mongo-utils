@@ -8,7 +8,7 @@
 
 > **hydrateDbWithDummyData**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [mongo-test/src/index.ts:61](https://github.com/Xunnamius/mongo-utils/blob/c274944be604d61c0da7398d0086c9ff8091cd9f/packages/mongo-test/src/index.ts#L61)
+Defined in: [mongo-test/src/index.ts:62](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/index.ts#L62)
 
 Fill an initialized database with data. You should call initializeDb
 before calling this function.
