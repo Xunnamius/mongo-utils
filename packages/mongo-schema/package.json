@@ -65,7 +65,7 @@
     "@-xun/next-env": "^1.1.0",
     "core-js": "^3.43.0",
     "mongodb": "^6.17.0",
-    "rejoinder": "^1.2.5"
+    "rejoinder": "^2.0.1"
   },
   "devDependencies": {
     "@-xun/fs": "^2.0.0"
