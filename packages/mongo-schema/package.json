@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "@-xun/next-env": "^1.1.0",
-    "core-js": "^3.42.0",
+    "core-js": "^3.43.0",
     "mongodb": "^6.17.0",
     "rejoinder": "^1.2.5"
   },
