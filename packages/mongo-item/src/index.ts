@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { ErrorMessage } from 'universe+mongo-item:error.ts';
 
 import type { Collection, Document, WithId } from 'mongodb';
+import type { Arrayable } from 'type-fest';
 
 /**
  * Represents the value of the `_id` property of a MongoDB collection entry.
@@ -59,6 +60,14 @@ export async function itemExists<T extends Document>(
   descriptor: { key: string; id: string | ObjectId },
   options?: ItemExistsOptions
 ): Promise<boolean>;
+/**
+ * Checks if an item matching `id` exists within `collection`.
+ */
+export async function itemExists<T extends Document>(
+  collection: Collection<T>,
+  id: ItemExistsIdParam,
+  options?: ItemExistsOptions
+): Promise<boolean>;
 export async function itemExists<T extends Document>(
   collection: Collection<T>,
   id: ItemExistsIdParam,
@@ -94,6 +103,7 @@ export async function itemExists<T extends Document>(
   }
 
   return (
+    0 !==
     (await collection.countDocuments(
       {
         [idProperty]: id,
@@ -102,19 +112,19 @@ export async function itemExists<T extends Document>(
       {
         ...(options?.caseInsensitive ? { collation: { locale: 'en', strength: 2 } } : {})
       }
-    )) !== 0
+    ))
   );
 }
 
 /**
- * The shape of an object that can be translated into an `ObjectId` (or `T`)
- * instance or is `null`/`undefined`.
+ * The shape of an object that can be translated into an {@link ObjectId} (or
+ * `T`) instance, or is `null`/`undefined`.
  */
 export type IdItem<T extends ObjectId> = WithId<unknown> | string | T | null | undefined;
 
 /**
  * The shape of an array of objects that can be translated into an array of
- * `ObjectId` (or `T`) instances or are `null`/`undefined`.
+ * {@link ObjectId} (or `T`) instances, or are `null`/`undefined`.
  */
 export type IdItemArray<T extends ObjectId> = IdItem<T>[];
 
@@ -129,7 +139,7 @@ export type ItemToObjectIdOptions = {
 };
 
 /**
- * Reduces an `item` down to its `ObjectId` instance.
+ * Reduces an `item` down to its {@link ObjectId} instance.
  *
  * When `options.ignoreInvalidId` is `true`, result may be `null`.
  */
@@ -140,10 +150,11 @@ export function itemToObjectId<T extends ObjectId>(
   }
 ): T | null;
 /**
- * Reduces an array of `items` down to their respective `ObjectId` instances.
+ * Reduces an array of `items` down to their respective {@link ObjectId}
+ * instances.
  *
  * An attempt is made to eliminate duplicates via `new Set(...)`, but the
- * absence of duplicates is not guaranteed when `items` contains `WithId<...>`
+ * absence of duplicates is not guaranteed when `items` contains {@link WithId}
  * objects.
  *
  * When `options.ignoreInvalidId` is `true`, result may contain `null`s.
@@ -155,23 +166,34 @@ export function itemToObjectId<T extends ObjectId>(
   }
 ): (T | null)[];
 /**
- * Reduces an `item` down to its `ObjectId` instance.
+ * Reduces an `item` down to its {@link ObjectId} instance.
  */
 export function itemToObjectId<T extends ObjectId>(
   item: IdItem<T>,
   options?: ItemToObjectIdOptions
 ): T;
 /**
- * Reduces an array of `items` down to their respective `ObjectId` instances.
+ * Reduces an array of `items` down to their respective {@link ObjectId}
+ * instances.
  *
  * An attempt is made to eliminate duplicates via `new Set(...)`, but the
- * absence of duplicates is not guaranteed when `items` contains `WithId<...>`
+ * absence of duplicates is not guaranteed when `items` contains {@link WithId}
  * objects.
  */
 export function itemToObjectId<T extends ObjectId>(
   items: IdItemArray<T>,
   options?: ItemToObjectIdOptions
 ): T[];
+/**
+ * Reduces `itemOrItems` down to its {@link ObjectId} instance(s).
+ *
+ * When `options.ignoreInvalidId` is `true`, result may be or contain
+ * `null`s.
+ */
+export function itemToObjectId<T extends ObjectId>(
+  itemOrItems: IdItem<T> | IdItemArray<T>,
+  options?: ItemToObjectIdOptions
+): Arrayable<T | null>;
 export function itemToObjectId<T extends ObjectId>(
   item: IdItem<T> | IdItemArray<T>,
   options?: ItemToObjectIdOptions
@@ -224,18 +246,25 @@ export function itemToObjectId<T extends ObjectId>(
 }
 
 /**
- * Reduces an `item` down to the string representation of its `ObjectId`
+ * Reduces an `item` down to the string representation of its {@link ObjectId}
  * instance.
  */
 export function itemToStringId<T extends ObjectId>(item: IdItem<T>): string;
 /**
  * Reduces an array of `items` down to the string representations of their
- * respective `ObjectId` instances.
+ * respective {@link ObjectId} instances.
  */
 export function itemToStringId<T extends ObjectId>(items: IdItemArray<T>): string[];
+/**
+ * Reduces `itemOrItems` down to the string representation(s) of its
+ * {@link ObjectId} instance(s).
+ */
+export function itemToStringId<T extends ObjectId>(
+  itemOrItems: IdItem<T> | IdItemArray<T>
+): Arrayable<string>;
 export function itemToStringId<T extends ObjectId>(
   item: IdItem<T> | IdItemArray<T>
-): string | string[] {
+): Arrayable<string> {
   return Array.isArray(item)
     ? itemToObjectId<T>(item).map(String)
     : itemToObjectId<T>(item).toString();
