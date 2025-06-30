@@ -14,9 +14,36 @@ const config = await moduleExport({
   ...(await assertEnvironment())
 });
 
-config.push({
-  /* Add custom config here, such as disabling certain rules */
-});
+/* Add custom config objects here, such as those disabling certain rules */
+config
+  .push
+  // ? Paths listed here are ignored by Eslint and related tooling.
+  // { ignores: [] },
+  // * Configs applying to both JavaScript & TypeScript files (all extensions)
+  // ? Keep in mind that JS files can use @ts-check and "become" TS files,
+  // ? hence the existence of this block. Logically, most rules should be
+  // ? loaded here.
+  // ...[
+  //   { ...eslintPluginReactConfigs.flat.recommended, name: 'react:recommended' },
+  //   // ? For react@>=17
+  //   { ...eslintPluginReactConfigs.flat['jsx-runtime'], name: 'react:jsx-runtime' },
+  //   {
+  //     ...eslintPluginReactHooksConfigs['recommended-latest'],
+  //     name: 'react-hooks:recommended-latest'
+  //   },
+  //   { ...eslintPluginJsxA11yFlatConfigs.recommended, name: 'jsx-a11y:recommended' }
+  // ].flatMap((configs) =>
+  //   overwriteProperty(configs, 'files', [
+  //     `**/*.{ts,cts,mts,tsx}`
+  //   ])
+  // ),
+  // {
+  //   rules: {
+  //     'unicorn/no-keyword-prefix': 'off',
+  //     'no-restricted-syntax': 'off'
+  //   }
+  // }
+  ();
 
 export default config;
 
@@ -27,35 +54,29 @@ function getEslintAliases() {
   // ! directly, consider regenerating aliases across the entire project with:
   // ! `npx symbiote project renovate --regenerate-assets --assets-preset ...`
   return [
-    ['multiverse+mongo-common:*', './packages/mongo-common/src/*'],
     ['multiverse+mongo-item:*', './packages/mongo-item/src/*'],
     ['multiverse+mongo-schema:*', './packages/mongo-schema/src/*'],
     ['multiverse+mongo-test:*', './packages/mongo-test/src/*'],
     ['multiverse+shared:*', './packages/shared/src/*'],
-    ['multiverse+mongo-common', './packages/mongo-common/src/index.ts'],
     ['multiverse+mongo-item', './packages/mongo-item/src/index.ts'],
     ['multiverse+mongo-schema', './packages/mongo-schema/src/index.ts'],
     ['multiverse+mongo-test', './packages/mongo-test/src/index.ts'],
     ['multiverse+shared', './packages/shared/src/index.ts'],
-    ['rootverse+mongo-common:*', './packages/mongo-common/*'],
     ['rootverse+mongo-item:*', './packages/mongo-item/*'],
     ['rootverse+mongo-schema:*', './packages/mongo-schema/*'],
     ['rootverse+mongo-test:*', './packages/mongo-test/*'],
     ['rootverse+shared:*', './packages/shared/*'],
     ['rootverse:*', './*'],
-    ['universe+mongo-common:*', './packages/mongo-common/src/*'],
     ['universe+mongo-item:*', './packages/mongo-item/src/*'],
     ['universe+mongo-schema:*', './packages/mongo-schema/src/*'],
     ['universe+mongo-test:*', './packages/mongo-test/src/*'],
     ['universe+shared:*', './packages/shared/src/*'],
-    ['universe+mongo-common', './packages/mongo-common/src/index.ts'],
     ['universe+mongo-item', './packages/mongo-item/src/index.ts'],
     ['universe+mongo-schema', './packages/mongo-schema/src/index.ts'],
     ['universe+mongo-test', './packages/mongo-test/src/index.ts'],
     ['universe+shared', './packages/shared/src/index.ts'],
     ['universe:*', './src/*'],
     ['universe', './src/index.ts'],
-    ['testverse+mongo-common:*', './packages/mongo-common/test/*'],
     ['testverse+mongo-item:*', './packages/mongo-item/test/*'],
     ['testverse+mongo-schema:*', './packages/mongo-schema/test/*'],
     ['testverse+mongo-test:*', './packages/mongo-test/test/*'],

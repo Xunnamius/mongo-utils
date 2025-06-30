@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import { getEnv } from '@-xun/next-env';
+import { getEnv } from '@-xun/env';
 import { MongoClient } from 'mongodb';
 import { createDebugLogger } from 'rejoinder';
 

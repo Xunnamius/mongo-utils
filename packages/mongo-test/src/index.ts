@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import inspector from 'node:inspector';
 
+import { getEnv } from '@-xun/env';
 import { mockDateNowMs } from '@-xun/jest';
 
 import {
@@ -14,7 +15,6 @@ import {
   setSchemaConfig
 } from '@-xun/mongo-schema';
 
-import { getEnv } from '@-xun/next-env';
 import { MongoClient, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createDebugLogger } from 'rejoinder';

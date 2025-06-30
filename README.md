@@ -53,40 +53,34 @@ Utilities for a more pleasant DX with the mongodb driver.
 
 <!-- symbiote-template-region-end -->
 
-- [@-xun/mongo-common][1] — Common schema and data exports for mongo-utils.
+- [@-xun/mongo-item][1] — Tools for quickly finding items and documents in
+  mongo.
 - [@-xun/mongo-schema][2] — Tools for sharing common schemas across utility
   packages.
 - [@-xun/mongo-test][3] — Tools for testing mongo databases.
-- [@-xun/mongo-item][4] — Tools for quickly finding items and documents in
-  mongo.
-- [shared][5] — Common unpublished multiversal imports (beware the dual package
+- [shared][4] — Common unpublished multiversal imports (beware the dual package
   hazard!).
 
 ## Usage
 
 Currently, @-xun/mongo-schema is the base package (though it depends on
-[@-xun/next-env][6]). It is responsible for ensuring each database used by the
+[@-xun/env][6]). It is responsible for ensuring each database used by the
 software is always available and initialized as described by the currently
 registered schema.
 
 For that reason, @-xun/mongo-schema is relied upon by @-xun/mongo-test, which
 contains tools for manipulating the software's databases while under test.
 
-@-xun/mongo-common relies on both @-xun/mongo-schema and @-xun/mongo-test for
-their types (as well as several @-xun/next-\* packages), and contains common
-baseline schemas (along with their dummy testing data) used in some way by most
-of my mongo-related software.
-
-@-xun/mongo-item and @-xun/mongo-oid-sort are standalone tools.
+@-xun/mongo-item is a standalone tool.
 
 Projects should call `setSchemaConfig()` (from @-xun/mongo-schema) as early as
 possible during their initialization process. When running tests,
 `setDummyData()` from (@-xun/mongo-test) should similarly be called as early as
 possible. They can be passed common schema and dummy data from
-@-xun/mongo-common; this data should be tweaked further before being passed to
-`setSchemaConfig()` and `setDummyData()`. Once those two functions are called,
-`getDb()` and related functions will all work out-of-the-box and without further
-configuration!
+@-xun/api-strategy/mongo/dummy; this data should be tweaked further before being
+passed to `setSchemaConfig()` and `setDummyData()`. Once those two functions are
+called, `getDb()` and related functions will all work out-of-the-box and without
+further configuration!
 
 <!-- symbiote-template-region-start 5 -->
 
@@ -175,9 +169,8 @@ specification. Contributions of any kind welcome!
 [x-repo-pr-compare]: https://github.com/Xunnamius/mongo-utils/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
-[1]: ./packages/mongo-common
+[1]: ./packages/mongo-item
 [2]: ./packages/mongo-schema
 [3]: ./packages/mongo-test
-[4]: ./packages/mongo-item
-[5]: ./packages/shared
-[6]: https://github.com/Xunnamius/react-utils/packages/next-env
+[4]: ./packages/shared
+[6]: https://github.com/Xunnamius/react-utils/packages/env
