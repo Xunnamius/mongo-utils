@@ -1,6 +1,6 @@
 {
   "name": "@-xun/mongo-item",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tools for quickly finding items and documents in mongo",
   "keywords": [],
   "homepage": "https://github.com/Xunnamius/mongo-utils/tree/main/packages/mongo-item#readme",
