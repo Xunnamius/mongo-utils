@@ -21,47 +21,62 @@ this project adheres to [Semantic Versioning][2].
 
 <br />
 
-### 🏗️ Patch @-xun/mongo-test[@1.1.2][9] (2025-06-05)
-
-#### 🪄 Fixes
-
-- **packages:** ensure setX() function parameters are "functionable" ([da36b2f][10])
+### 🏗️ Patch @-xun/mongo-test[@1.1.3][9] (2025-06-30)
 
 #### ⚙️ Build System
 
-- **deps:** bump internal monorepo interdependencies to latest versions ([f7025b9][11])
+- Add @-xun/env (remove @-xun/next-env) ([4671c51][10])
+- **deps:** bump @-xun/jest from 2.1.3 to 2.2.1 ([1211407][11])
+- **deps:** bump @-xun/jest from 2.2.1 to 2.2.4 ([58e93b0][12])
+- **deps:** bump @-xun/jest from 2.2.4 to 2.2.5 ([cf46468][13])
+- **deps:** bump @-xun/next-env from 1.0.2 to 1.1.0 ([91db983][14])
+- **deps:** bump core-js from 3.42.0 to 3.43.0 ([82fc977][15])
+- **deps:** bump internal monorepo interdependencies to latest versions ([c9e7b79][16])
+- **deps:** bump rejoinder from 1.2.5 to 2.0.1 ([79c355c][17])
 
 <br />
 
-### 🏗️ Patch @-xun/mongo-test[@1.1.1][12] (2025-06-03)
+### 🏗️ Patch @-xun/mongo-test[@1.1.2][18] (2025-06-05)
 
 #### 🪄 Fixes
 
-- **packages/mongo-test:** plug memory leak during mongo-ms cleanup routine ([a42d1f3][13])
+- **packages:** ensure setX() function parameters are "functionable" ([da36b2f][19])
 
 #### ⚙️ Build System
 
-- **deps:** bump internal monorepo interdependencies to latest versions ([c4a4849][14])
+- **deps:** bump internal monorepo interdependencies to latest versions ([f7025b9][20])
 
 <br />
 
-## @-xun/mongo-test[@1.0.0][15] (2025-06-02)
+### 🏗️ Patch @-xun/mongo-test[@1.1.1][21] (2025-06-03)
+
+#### 🪄 Fixes
+
+- **packages/mongo-test:** plug memory leak during mongo-ms cleanup routine ([a42d1f3][22])
+
+#### ⚙️ Build System
+
+- **deps:** bump internal monorepo interdependencies to latest versions ([c4a4849][23])
+
+<br />
+
+## @-xun/mongo-test[@1.0.0][24] (2025-06-02)
 
 ### ✨ Features
 
-- **packages/mongo-test:** implement @-xun/mongo-test ([7b7238c][16])
+- **packages/mongo-test:** implement @-xun/mongo-test ([7b7238c][25])
 
 <br />
 
-### 🏗️ Patch @-xun/mongo-test[@1.0.1][17] (2025-06-03)
+### 🏗️ Patch @-xun/mongo-test[@1.0.1][26] (2025-06-03)
 
 #### 🪄 Fixes
 
-- **packages/shared:** use more accurate types for internal shared memory ([d887470][18])
+- **packages/shared:** use more accurate types for internal shared memory ([d887470][27])
 
 #### ⚙️ Build System
 
-- **deps:** bump internal monorepo interdependencies to latest versions ([a8eb945][19])
+- **deps:** bump internal monorepo interdependencies to latest versions ([a8eb945][28])
 
 [1]: https://conventionalcommits.org
 [2]: https://semver.org
@@ -71,14 +86,23 @@ this project adheres to [Semantic Versioning][2].
 [6]: https://github.com/Xunnamius/mongo-utils/commit/c88f3b0ed64868a6f49bce55cc755bfcc2c2a2f9
 [7]: https://github.com/Xunnamius/mongo-utils/commit/adcea4b279e5bbf21b37d855ee502f1f635668d3
 [8]: https://github.com/Xunnamius/mongo-utils/commit/e36a3e74258b21b72f3efea7ae717693958d19b7
-[9]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.1.1...@-xun/mongo-test@1.1.2
-[10]: https://github.com/Xunnamius/mongo-utils/commit/da36b2f7ed743ec7d8e66e842457ff4af33ae36e
-[11]: https://github.com/Xunnamius/mongo-utils/commit/f7025b96096fa3c28f6709dbefc9663807f406dd
-[12]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.1.0...@-xun/mongo-test@1.1.1
-[13]: https://github.com/Xunnamius/mongo-utils/commit/a42d1f3bf6df8ecad890c565a46f81f53a45682a
-[14]: https://github.com/Xunnamius/mongo-utils/commit/c4a48495d2d01da20245757303c3130ffe912d9a
-[15]: https://github.com/Xunnamius/mongo-utils/compare/7b7238ccb96b3e04fca5f7608ea8476890bbb153...@-xun/mongo-test@1.0.0
-[16]: https://github.com/Xunnamius/mongo-utils/commit/7b7238ccb96b3e04fca5f7608ea8476890bbb153
-[17]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.0.0...@-xun/mongo-test@1.0.1
-[18]: https://github.com/Xunnamius/mongo-utils/commit/d887470e11c12850d2375d4c5c93bcc22682bb96
-[19]: https://github.com/Xunnamius/mongo-utils/commit/a8eb945b56abca416084448e2d151aef93b9c677
+[9]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.1.2...@-xun/mongo-test@1.1.3
+[10]: https://github.com/Xunnamius/mongo-utils/commit/4671c51e0b154b368b76cc65445cc8fa8f242dc2
+[11]: https://github.com/Xunnamius/mongo-utils/commit/12114076b58467a9e360a692c8811812cf5b46ad
+[12]: https://github.com/Xunnamius/mongo-utils/commit/58e93b0aedb278b009c185e5dfc9f32cf0972085
+[13]: https://github.com/Xunnamius/mongo-utils/commit/cf464682a7b2394e2d23fc6c57a72c5c79e30efa
+[14]: https://github.com/Xunnamius/mongo-utils/commit/91db983263466271b376021bb471d5b5c293b2df
+[15]: https://github.com/Xunnamius/mongo-utils/commit/82fc97790fe3d2599e1333238e77fc915e7e4f29
+[16]: https://github.com/Xunnamius/mongo-utils/commit/c9e7b791fd5fa7823d6028e840bcef44b12978f0
+[17]: https://github.com/Xunnamius/mongo-utils/commit/79c355ce1906b7d7de63413f997423e40c7d9b43
+[18]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.1.1...@-xun/mongo-test@1.1.2
+[19]: https://github.com/Xunnamius/mongo-utils/commit/da36b2f7ed743ec7d8e66e842457ff4af33ae36e
+[20]: https://github.com/Xunnamius/mongo-utils/commit/f7025b96096fa3c28f6709dbefc9663807f406dd
+[21]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.1.0...@-xun/mongo-test@1.1.1
+[22]: https://github.com/Xunnamius/mongo-utils/commit/a42d1f3bf6df8ecad890c565a46f81f53a45682a
+[23]: https://github.com/Xunnamius/mongo-utils/commit/c4a48495d2d01da20245757303c3130ffe912d9a
+[24]: https://github.com/Xunnamius/mongo-utils/compare/7b7238ccb96b3e04fca5f7608ea8476890bbb153...@-xun/mongo-test@1.0.0
+[25]: https://github.com/Xunnamius/mongo-utils/commit/7b7238ccb96b3e04fca5f7608ea8476890bbb153
+[26]: https://github.com/Xunnamius/mongo-utils/compare/@-xun/mongo-test@1.0.0...@-xun/mongo-test@1.0.1
+[27]: https://github.com/Xunnamius/mongo-utils/commit/d887470e11c12850d2375d4c5c93bcc22682bb96
+[28]: https://github.com/Xunnamius/mongo-utils/commit/a8eb945b56abca416084448e2d151aef93b9c677

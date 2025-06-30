@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`__namedParameters`): `object`
 
-Defined in: [mongo-test/src/index.ts:127](https://github.com/Xunnamius/mongo-utils/blob/3fca190c25d9eb11f9f0d26a5f7526b5b45a52b2/packages/mongo-test/src/index.ts#L127)
+Defined in: [mongo-test/src/index.ts:127](https://github.com/Xunnamius/mongo-utils/blob/86f3ab47600d8c0cc020457428d5e0ac6739da3d/packages/mongo-test/src/index.ts#L127)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
