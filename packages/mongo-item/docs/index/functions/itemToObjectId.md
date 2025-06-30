@@ -10,9 +10,9 @@
 
 > **itemToObjectId**\<`T`\>(`item`, `options`): `null` \| `T`
 
-Defined in: [index.ts:136](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L136)
+Defined in: [index.ts:146](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L146)
 
-Reduces an `item` down to its `ObjectId` instance.
+Reduces an `item` down to its ObjectId instance.
 
 When `options.ignoreInvalidId` is `true`, result may be `null`.
 
@@ -40,12 +40,13 @@ When `options.ignoreInvalidId` is `true`, result may be `null`.
 
 > **itemToObjectId**\<`T`\>(`items`, `options`): (`null` \| `T`)[]
 
-Defined in: [index.ts:151](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L151)
+Defined in: [index.ts:162](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L162)
 
-Reduces an array of `items` down to their respective `ObjectId` instances.
+Reduces an array of `items` down to their respective ObjectId
+instances.
 
 An attempt is made to eliminate duplicates via `new Set(...)`, but the
-absence of duplicates is not guaranteed when `items` contains `WithId<...>`
+absence of duplicates is not guaranteed when `items` contains WithId
 objects.
 
 When `options.ignoreInvalidId` is `true`, result may contain `null`s.
@@ -74,9 +75,9 @@ When `options.ignoreInvalidId` is `true`, result may contain `null`s.
 
 > **itemToObjectId**\<`T`\>(`item`, `options?`): `T`
 
-Defined in: [index.ts:160](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L160)
+Defined in: [index.ts:171](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L171)
 
-Reduces an `item` down to its `ObjectId` instance.
+Reduces an `item` down to its ObjectId instance.
 
 ### Type Parameters
 
@@ -102,12 +103,13 @@ Reduces an `item` down to its `ObjectId` instance.
 
 > **itemToObjectId**\<`T`\>(`items`, `options?`): `T`[]
 
-Defined in: [index.ts:171](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L171)
+Defined in: [index.ts:183](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L183)
 
-Reduces an array of `items` down to their respective `ObjectId` instances.
+Reduces an array of `items` down to their respective ObjectId
+instances.
 
 An attempt is made to eliminate duplicates via `new Set(...)`, but the
-absence of duplicates is not guaranteed when `items` contains `WithId<...>`
+absence of duplicates is not guaranteed when `items` contains WithId
 objects.
 
 ### Type Parameters
@@ -129,3 +131,34 @@ objects.
 ### Returns
 
 `T`[]
+
+## Call Signature
+
+> **itemToObjectId**\<`T`\>(`itemOrItems`, `options?`): `Arrayable`\<`null` \| `T`\>
+
+Defined in: [index.ts:193](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L193)
+
+Reduces `itemOrItems` down to its ObjectId instance(s).
+
+When `options.ignoreInvalidId` is `true`, result may be or contain
+`null`s.
+
+### Type Parameters
+
+#### T
+
+`T` *extends* `ObjectId`
+
+### Parameters
+
+#### itemOrItems
+
+[`IdItem`](../type-aliases/IdItem.md)\<`T`\> | [`IdItemArray`](../type-aliases/IdItemArray.md)\<`T`\>
+
+#### options?
+
+[`ItemToObjectIdOptions`](../type-aliases/ItemToObjectIdOptions.md)
+
+### Returns
+
+`Arrayable`\<`null` \| `T`\>

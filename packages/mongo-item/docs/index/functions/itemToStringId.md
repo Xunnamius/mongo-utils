@@ -10,9 +10,9 @@
 
 > **itemToStringId**\<`T`\>(`item`): `string`
 
-Defined in: [index.ts:230](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L230)
+Defined in: [index.ts:252](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L252)
 
-Reduces an `item` down to the string representation of its `ObjectId`
+Reduces an `item` down to the string representation of its ObjectId
 instance.
 
 ### Type Parameters
@@ -35,10 +35,10 @@ instance.
 
 > **itemToStringId**\<`T`\>(`items`): `string`[]
 
-Defined in: [index.ts:235](https://github.com/Xunnamius/mongo-utils/blob/0a3dc93c94448d436dc8dc4e3070f0fd468aa02e/packages/mongo-item/src/index.ts#L235)
+Defined in: [index.ts:257](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L257)
 
 Reduces an array of `items` down to the string representations of their
-respective `ObjectId` instances.
+respective ObjectId instances.
 
 ### Type Parameters
 
@@ -55,3 +55,28 @@ respective `ObjectId` instances.
 ### Returns
 
 `string`[]
+
+## Call Signature
+
+> **itemToStringId**\<`T`\>(`itemOrItems`): `Arrayable`\<`string`\>
+
+Defined in: [index.ts:262](https://github.com/Xunnamius/mongo-utils/blob/6d8fd135282108c666a758aaa66b65ddbaefc6f2/packages/mongo-item/src/index.ts#L262)
+
+Reduces `itemOrItems` down to the string representation(s) of its
+ObjectId instance(s).
+
+### Type Parameters
+
+#### T
+
+`T` *extends* `ObjectId`
+
+### Parameters
+
+#### itemOrItems
+
+[`IdItem`](../type-aliases/IdItem.md)\<`T`\> | [`IdItemArray`](../type-aliases/IdItemArray.md)\<`T`\>
+
+### Returns
+
+`Arrayable`\<`string`\>
