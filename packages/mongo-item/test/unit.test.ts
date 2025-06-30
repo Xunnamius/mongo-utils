@@ -1,16 +1,18 @@
 import { DUMMY_BEARER_TOKEN, NULL_BEARER_TOKEN } from '@-xun/api-strategy/auth';
 import { getCommonSchemaConfig } from '@-xun/api-strategy/mongo';
 import { getCommonDummyData } from '@-xun/api-strategy/mongo/dummy';
+import { getDb } from '@-xun/mongo-schema';
 import { setupMemoryServerOverride } from '@-xun/mongo-test';
 import { ObjectId } from 'mongodb';
 import { toss } from 'toss-expression';
 
 import { itemExists, itemToObjectId, itemToStringId } from 'universe+mongo-item';
-import { getDb } from 'universe+mongo-schema';
+import { ErrorMessage } from 'universe+mongo-item:error.ts';
 
 import { expectExceptionsWithMatchingErrors } from 'testverse:util.ts';
 
 import type { InternalAuthEntry } from '@-xun/api-strategy/auth';
+import type { ExpectExceptionsWithMatchingErrorsSpec as Spec } from 'testverse:util.ts';
 
 setupMemoryServerOverride({
   schema: getCommonSchemaConfig(),
@@ -29,11 +31,11 @@ describe('::itemExists', () => {
     await expect(itemExists(col, new ObjectId())).resolves.toBeFalse();
 
     await expect(
-      itemExists(col, { key: 'token.bearer', id: DUMMY_BEARER_TOKEN })
+      itemExists(col, { key: 'token', id: DUMMY_BEARER_TOKEN })
     ).resolves.toBeTrue();
 
     await expect(
-      itemExists(col, { key: 'token.bearer', id: NULL_BEARER_TOKEN })
+      itemExists(col, { key: 'token', id: NULL_BEARER_TOKEN })
     ).resolves.toBeFalse();
   });
 
@@ -60,16 +62,12 @@ describe('::itemExists', () => {
     await expect(itemExists(col, item._id)).resolves.toBeTrue();
     await expect(
       itemExists(col, item._id, {
-        excludeId: { key: 'token.bearer', id: item.token.bearer }
+        excludeId: { key: 'token', id: item.token }
       })
     ).resolves.toBeFalse();
 
     await expect(
-      itemExists(
-        col,
-        { key: 'token.bearer', id: item.token.bearer },
-        { excludeId: item._id }
-      )
+      itemExists(col, { key: 'token', id: item.token }, { excludeId: item._id })
     ).resolves.toBeFalse();
   });
 
@@ -87,10 +85,10 @@ describe('::itemExists', () => {
     await expect(
       itemExists(
         col,
-        { key: 'token.bearer', id: item.token.bearer },
-        { excludeId: { key: 'token.bearer', id: item.token.bearer } }
+        { key: 'token', id: item.token },
+        { excludeId: { key: 'token', id: item.token } }
       )
-    ).rejects.toThrow('cannot lookup an item by property "token.bearer"');
+    ).rejects.toThrow('cannot lookup an item by property "token"');
   });
 
   it('respects caseInsensitive option', async () => {
@@ -101,13 +99,13 @@ describe('::itemExists', () => {
     await expect(
       itemExists(
         col,
-        { key: 'token.bearer', id: DUMMY_BEARER_TOKEN.toUpperCase() },
+        { key: 'token', id: DUMMY_BEARER_TOKEN.toUpperCase() },
         { caseInsensitive: true }
       )
     ).resolves.toBeTrue();
 
     await expect(
-      itemExists(col, { key: 'token.bearer', id: DUMMY_BEARER_TOKEN.toUpperCase() })
+      itemExists(col, { key: 'token', id: DUMMY_BEARER_TOKEN.toUpperCase() })
     ).resolves.toBeFalse();
 
     const item =
@@ -117,13 +115,13 @@ describe('::itemExists', () => {
 
     await expect(
       itemExists(col, item._id, {
-        excludeId: { key: 'token.bearer', id: item.token.bearer.toUpperCase() }
+        excludeId: { key: 'token', id: item.token.toUpperCase() }
       })
     ).resolves.toBeTrue();
 
     await expect(
       itemExists(col, item._id, {
-        excludeId: { key: 'token.bearer', id: item.token.bearer.toUpperCase() },
+        excludeId: { key: 'token', id: item.token.toUpperCase() },
         caseInsensitive: true
       })
     ).resolves.toBeFalse();
@@ -173,20 +171,23 @@ describe('::itemToObjectId', () => {
   it('throws if item is irreducible or invalid', async () => {
     expect.hasAssertions();
 
-    type ParamsType = Parameters<typeof itemToStringId>[0];
-    const errors: [params: ParamsType, error: string][] = [
-      [null as unknown as ParamsType, 'invalid ObjectId "null"'],
-      [undefined as unknown as ParamsType, 'invalid ObjectId "undefined"'],
-      [[null], 'invalid ObjectId "null"'],
-      [[undefined], 'invalid ObjectId "undefined"'],
-      [{} as unknown as ParamsType, 'invalid ObjectId "[object Object]"'],
-      [[{}] as unknown as ParamsType, 'invalid ObjectId "[object Object]"'],
-      ['bad' as unknown as ParamsType, 'invalid ObjectId "bad"'],
-      [['bad'], 'invalid ObjectId "bad"'],
-      [[new ObjectId(), 'bad'], 'invalid ObjectId "bad"']
-    ];
+    const errors = [
+      [null, ErrorMessage.InvalidItem(null, 'ObjectId')],
+      [undefined, ErrorMessage.InvalidItem('undefined', 'ObjectId')],
+      [[null], ErrorMessage.InvalidItem(null, 'ObjectId')],
+      [[undefined], ErrorMessage.InvalidItem('undefined', 'ObjectId')],
+      [{}, ErrorMessage.InvalidItem('[object Object]', 'ObjectId')],
+      [[{}], ErrorMessage.InvalidItem('[object Object]', 'ObjectId')],
+      ['bad', ErrorMessage.InvalidItem('bad', 'ObjectId')],
+      [['bad'], ErrorMessage.InvalidItem('bad', 'ObjectId')],
+      [[new ObjectId(), 'bad'], ErrorMessage.InvalidItem('bad', 'ObjectId')]
+    ] as Spec<[Parameters<typeof itemToObjectId>[0]], 'single-parameter'>;
 
-    await expectExceptionsWithMatchingErrors(errors, (params) => itemToObjectId(params));
+    await expectExceptionsWithMatchingErrors(
+      errors,
+      (params) => itemToObjectId(...params),
+      { singleParameter: true }
+    );
   });
 
   it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');
@@ -224,22 +225,23 @@ describe('::itemToStringId', () => {
   it('throws if item is irreducible', async () => {
     expect.hasAssertions();
 
-    // TODO: replace these error message strings here and elsewhere with
-    // TODO: ErrorMessage package
-    type ParamsType = Parameters<typeof itemToStringId>[0];
-    const errors: [params: ParamsType, error: string][] = [
-      [null as unknown as ParamsType, 'invalid ObjectId "null"'],
-      [undefined as unknown as ParamsType, 'invalid ObjectId "undefined"'],
-      [[null], 'invalid ObjectId "null"'],
-      [[undefined], 'invalid ObjectId "undefined"'],
-      [{} as unknown as ParamsType, 'invalid ObjectId "[object Object]"'],
-      [[{}] as unknown as ParamsType, 'invalid ObjectId "[object Object]"'],
-      ['bad' as unknown as ParamsType, 'invalid ObjectId "bad"'],
-      [['bad'], 'invalid ObjectId "bad"'],
-      [[new ObjectId(), 'bad'], 'invalid ObjectId "bad"']
-    ];
+    const errors = [
+      [null, ErrorMessage.InvalidItem(null, 'ObjectId')],
+      [undefined, ErrorMessage.InvalidItem('undefined', 'ObjectId')],
+      [[null], ErrorMessage.InvalidItem(null, 'ObjectId')],
+      [[undefined], ErrorMessage.InvalidItem('undefined', 'ObjectId')],
+      [{}, ErrorMessage.InvalidItem('[object Object]', 'ObjectId')],
+      [[{}], ErrorMessage.InvalidItem('[object Object]', 'ObjectId')],
+      ['bad', ErrorMessage.InvalidItem('bad', 'ObjectId')],
+      [['bad'], ErrorMessage.InvalidItem('bad', 'ObjectId')],
+      [[new ObjectId(), 'bad'], ErrorMessage.InvalidItem('bad', 'ObjectId')]
+    ] as Spec<[Parameters<typeof itemToStringId>[0]], 'single-parameter'>;
 
-    await expectExceptionsWithMatchingErrors(errors, (params) => itemToStringId(params));
+    await expectExceptionsWithMatchingErrors(
+      errors,
+      (params) => itemToStringId(...params),
+      { singleParameter: true }
+    );
   });
 
   it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');
