@@ -8,7 +8,7 @@
 
 > **ItemToObjectIdOptions** = `object`
 
-Defined in: [index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L131)
+Defined in: [index.ts:141](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L141)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a7
 
 > `optional` **ignoreInvalidId**: `boolean`
 
-Defined in: [index.ts:138](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L138)
+Defined in: [index.ts:148](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L148)
 
 If `true`, inputs that cannot be coerced into an ObjectId will be
 replaced with `null` instead of throwing a ValidationError.

@@ -10,7 +10,7 @@
 
 > **itemToStringId**\<`T`\>(`item`): `string`
 
-Defined in: [index.ts:252](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L252)
+Defined in: [index.ts:262](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L262)
 
 Reduces an `item` down to the string representation of its ObjectId
 instance.
@@ -35,7 +35,7 @@ instance.
 
 > **itemToStringId**\<`T`\>(`items`): `string`[]
 
-Defined in: [index.ts:257](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L257)
+Defined in: [index.ts:267](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L267)
 
 Reduces an array of `items` down to the string representations of their
 respective ObjectId instances.
@@ -60,7 +60,7 @@ respective ObjectId instances.
 
 > **itemToStringId**\<`T`\>(`itemOrItems`): `Arrayable`\<`string`\>
 
-Defined in: [index.ts:262](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L262)
+Defined in: [index.ts:272](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L272)
 
 Reduces `itemOrItems` down to the string representation(s) of its
 ObjectId instance(s).

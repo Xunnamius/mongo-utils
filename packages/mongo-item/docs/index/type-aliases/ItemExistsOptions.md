@@ -8,7 +8,7 @@
 
 > **ItemExistsOptions** = `object`
 
-Defined in: [index.ts:22](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L22)
+Defined in: [index.ts:23](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L23)
 
 Available options for the `itemExists` function.
 
@@ -18,7 +18,7 @@ Available options for the `itemExists` function.
 
 > `optional` **caseInsensitive**: `boolean`
 
-Defined in: [index.ts:34](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L34)
+Defined in: [index.ts:35](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L35)
 
 If `true`, ids will be matched in a case-insensitive manner (via locale).
 
@@ -34,7 +34,7 @@ false
 
 > `optional` **excludeId**: [`ItemExistsIdParam`](ItemExistsIdParam.md)
 
-Defined in: [index.ts:28](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L28)
+Defined in: [index.ts:29](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L29)
 
 Items matching excludeId will be completely ignored by this function.
 
@@ -50,7 +50,7 @@ undefined
 
 > `optional` **optimisticCoercion**: `boolean`
 
-Defined in: [index.ts:42](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L42)
+Defined in: [index.ts:43](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L43)
 
 When looking for an item matching `{ _id: id }`, where the descriptor key
 is the string `"_id"`, `id` will be optimistically wrapped in a `new

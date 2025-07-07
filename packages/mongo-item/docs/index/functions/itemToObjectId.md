@@ -10,7 +10,7 @@
 
 > **itemToObjectId**\<`T`\>(`item`, `options`): `null` \| `T`
 
-Defined in: [index.ts:146](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L146)
+Defined in: [index.ts:156](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L156)
 
 Reduces an `item` down to its ObjectId instance.
 
@@ -40,7 +40,7 @@ When `options.ignoreInvalidId` is `true`, result may be `null`.
 
 > **itemToObjectId**\<`T`\>(`items`, `options`): (`null` \| `T`)[]
 
-Defined in: [index.ts:162](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L162)
+Defined in: [index.ts:172](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L172)
 
 Reduces an array of `items` down to their respective ObjectId
 instances.
@@ -75,7 +75,7 @@ When `options.ignoreInvalidId` is `true`, result may contain `null`s.
 
 > **itemToObjectId**\<`T`\>(`item`, `options?`): `T`
 
-Defined in: [index.ts:171](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L171)
+Defined in: [index.ts:181](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L181)
 
 Reduces an `item` down to its ObjectId instance.
 
@@ -103,7 +103,7 @@ Reduces an `item` down to its ObjectId instance.
 
 > **itemToObjectId**\<`T`\>(`items`, `options?`): `T`[]
 
-Defined in: [index.ts:183](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L183)
+Defined in: [index.ts:193](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L193)
 
 Reduces an array of `items` down to their respective ObjectId
 instances.
@@ -136,7 +136,7 @@ objects.
 
 > **itemToObjectId**\<`T`\>(`itemOrItems`, `options?`): `Arrayable`\<`null` \| `T`\>
 
-Defined in: [index.ts:193](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L193)
+Defined in: [index.ts:203](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L203)
 
 Reduces `itemOrItems` down to its ObjectId instance(s).
 

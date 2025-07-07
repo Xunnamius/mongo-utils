@@ -10,9 +10,12 @@
 
 > **itemExists**\<`T`\>(`collection`, `id`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [index.ts:49](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L49)
+Defined in: [index.ts:53](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L53)
 
-Checks if an item matching `{ _id: id }` exists within `collection`.
+Checks if an item matching `{ _id: id }` exists within `collection`,
+returning the result (`boolean`).
+
+This function **does not throw** if the item is not found.
 
 ### Type Parameters
 
@@ -42,10 +45,13 @@ Checks if an item matching `{ _id: id }` exists within `collection`.
 
 > **itemExists**\<`T`\>(`collection`, `descriptor`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [index.ts:58](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L58)
+Defined in: [index.ts:65](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L65)
 
 Checks if an item matching `{ [descriptor.key]: descriptor.id }` exists
-within `collection`.
+within `collection`,
+returning the result (`boolean`).
+
+This function **does not throw** if the item is not found.
 
 ### Type Parameters
 
@@ -81,9 +87,12 @@ within `collection`.
 
 > **itemExists**\<`T`\>(`collection`, `id`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [index.ts:66](https://github.com/Xunnamius/mongo-utils/blob/5a4a5a72ee127a824372b4175e7a7f6ab5a03af4/packages/mongo-item/src/index.ts#L66)
+Defined in: [index.ts:76](https://github.com/Xunnamius/mongo-utils/blob/f4f436a17e3a4dfdb6460c5eeb717c55d6f392c1/packages/mongo-item/src/index.ts#L76)
 
-Checks if an item matching `id` exists within `collection`.
+Checks if an item matching `id` exists within `collection`, returning the
+result (`boolean`).
+
+This function **does not throw** if the item is not found.
 
 ### Type Parameters
 
