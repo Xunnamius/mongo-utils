@@ -1,6 +1,6 @@
 {
   "name": "@-xun/mongo-test",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Tools for testing mongo databases",
   "keywords": [],
   "homepage": "https://github.com/Xunnamius/mongo-utils/tree/main/packages/mongo-test#readme",
