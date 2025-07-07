@@ -190,6 +190,7 @@ describe('::itemToObjectId', () => {
     );
   });
 
+  // TODO:
   it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');
 });
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 
+import { ServerValidationError } from '@-xun/api-error';
 import { getEnv } from '@-xun/env';
 import { MongoClient } from 'mongodb';
 import { createDebugLogger } from 'rejoinder';
@@ -58,7 +59,7 @@ export function getNameFromAlias(alias: string) {
   }
 
   if (!schema.databases[nameActual]?.collections) {
-    throw new Error(ErrorMessage.UnknownDatabaseAlias(nameActual));
+    throw new ServerValidationError(ErrorMessage.UnknownDatabaseAlias(nameActual));
   }
 
   return nameActual;
@@ -78,7 +79,7 @@ export function getAliasFromName(nameActual: string): string[] {
   const schema = getSchemaConfig();
 
   if (!schema.databases[nameActual]?.collections) {
-    throw new Error(ErrorMessage.UnknownDatabaseAlias(nameActual));
+    throw new ServerValidationError(ErrorMessage.UnknownDatabaseAlias(nameActual));
   }
 
   const aliases = Object.entries(schema.aliases)

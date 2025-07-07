@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+import { ClientValidationError } from '@-xun/api-error';
 import { ObjectId } from 'mongodb';
 
 import { ErrorMessage } from 'universe+mongo-item:error.ts';
@@ -44,7 +45,10 @@ export type ItemExistsOptions = {
 
 // TODO: the following needs to work with composite keys
 /**
- * Checks if an item matching `{ _id: id }` exists within `collection`.
+ * Checks if an item matching `{ _id: id }` exists within `collection`,
+ * returning the result (`boolean`).
+ *
+ * This function **does not throw** if the item is not found.
  */
 export async function itemExists<T extends Document>(
   collection: Collection<T>,
@@ -53,7 +57,10 @@ export async function itemExists<T extends Document>(
 ): Promise<boolean>;
 /**
  * Checks if an item matching `{ [descriptor.key]: descriptor.id }` exists
- * within `collection`.
+ * within `collection`,
+ * returning the result (`boolean`).
+ *
+ * This function **does not throw** if the item is not found.
  */
 export async function itemExists<T extends Document>(
   collection: Collection<T>,
@@ -61,7 +68,10 @@ export async function itemExists<T extends Document>(
   options?: ItemExistsOptions
 ): Promise<boolean>;
 /**
- * Checks if an item matching `id` exists within `collection`.
+ * Checks if an item matching `id` exists within `collection`, returning the
+ * result (`boolean`).
+ *
+ * This function **does not throw** if the item is not found.
  */
 export async function itemExists<T extends Document>(
   collection: Collection<T>,
@@ -91,7 +101,7 @@ export async function itemExists<T extends Document>(
   }
 
   if (idProperty === excludeIdProperty) {
-    throw new Error(ErrorMessage.LookupFilterConflict(idProperty));
+    throw new ClientValidationError(ErrorMessage.LookupFilterConflict(idProperty));
   }
 
   if (
@@ -239,9 +249,9 @@ export function itemToObjectId<T extends ObjectId>(
       }
     }
   } catch (error) {
-    const throwable = new Error(ErrorMessage.InvalidItem(String(_id), 'ObjectId'));
-    throwable.cause = error;
-    throw throwable;
+    throw new ClientValidationError(ErrorMessage.InvalidItem(String(_id), 'ObjectId'), {
+      cause: error
+    });
   }
 }
 
