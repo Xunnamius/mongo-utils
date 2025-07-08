@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@-xun/api-error": "^1.0.0",
-    "core-js": "^3.43.0",
+    "core-js": "^3.44.0",
     "mongodb": "^6.17.0",
     "type-fest": "^4.41.0"
   },
