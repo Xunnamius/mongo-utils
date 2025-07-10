@@ -69,7 +69,7 @@
     "test:packages:all": "symbiote test --env NODE_NO_WARNINGS=1 --tests all-local --scope unlimited --coverage"
   },
   "dependencies": {
-    "@-xun/env": "^1.1.1",
+    "@-xun/env": "^1.1.2",
     "@-xun/jest": "^2.2.7",
     "@-xun/mongo-schema": "^1.2.1",
     "core-js": "^3.44.0",
