@@ -80,7 +80,7 @@
     "@-xun/fs": "^2.0.0",
     "@-xun/mongo-schema": "^1.2.1",
     "@-xun/mongo-test": "^1.1.7",
-    "rejoinder": "^2.0.1",
+    "rejoinder": "^2.0.2",
     "toss-expression": "^0.1.2"
   },
   "engines": {
