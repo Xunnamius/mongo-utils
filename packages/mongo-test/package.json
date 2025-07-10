@@ -75,7 +75,7 @@
     "core-js": "^3.44.0",
     "mongodb": "^6.17.0",
     "mongodb-memory-server": "^10.1.4",
-    "rejoinder": "^2.0.1"
+    "rejoinder": "^2.0.2"
   },
   "devDependencies": {
     "@-xun/fs": "^2.0.0",
