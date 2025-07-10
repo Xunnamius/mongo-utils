@@ -69,7 +69,7 @@
     "test:packages:all": "symbiote test --env NODE_NO_WARNINGS=1 --tests all-local --scope unlimited --coverage"
   },
   "dependencies": {
-    "@-xun/api-error": "^1.1.0",
+    "@-xun/api-error": "^1.1.1",
     "core-js": "^3.44.0",
     "mongodb": "^6.17.0",
     "type-fest": "^4.41.0"
