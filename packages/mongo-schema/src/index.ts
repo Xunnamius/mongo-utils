@@ -190,7 +190,7 @@ export async function getDb({
  * before calling this function, it will be created first then dropped.
  *
  * Note that this function does not clear the destroyed database's Db instance
- * from internal memory for performance reasons.
+ * from internal memory.
  */
 export async function destroyDb({
   name
