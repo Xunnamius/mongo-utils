@@ -8,7 +8,7 @@
 
 > **closeClient**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [mongo-schema/src/index.ts:128](https://github.com/Xunnamius/mongo-utils/blob/1d7d3698d252dda690d492a169428cc4921f850e/packages/mongo-schema/src/index.ts#L128)
+Defined in: [mongo-schema/src/index.ts:128](https://github.com/Xunnamius/mongo-utils/blob/215b087cc1b8fd6914cf3fbe657f77626466f333/packages/mongo-schema/src/index.ts#L128)
 
 Kills the MongoClient instance and any related database connections and
 clears shared memory.

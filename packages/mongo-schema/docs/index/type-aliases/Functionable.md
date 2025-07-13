@@ -8,7 +8,7 @@
 
 > **Functionable**\<`T`\> = `T` \| (...`args`) => `T`
 
-Defined in: [shared/src/memory.ts:11](https://github.com/Xunnamius/mongo-utils/blob/1d7d3698d252dda690d492a169428cc4921f850e/packages/shared/src/memory.ts#L11)
+Defined in: [shared/src/memory.ts:11](https://github.com/Xunnamius/mongo-utils/blob/215b087cc1b8fd6914cf3fbe657f77626466f333/packages/shared/src/memory.ts#L11)
 
 ## Type Parameters
 
