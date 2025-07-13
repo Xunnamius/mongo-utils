@@ -8,7 +8,7 @@
 
 > **ItemExistsIdParam** = `string` \| `ObjectId` \| \{ `id`: `string` \| `ObjectId`; `key`: `string`; \}
 
-Defined in: [index.ts:15](https://github.com/Xunnamius/mongo-utils/blob/30f283970ee47dbb7ec096d6e1c461c85dbb401e/packages/mongo-item/src/index.ts#L15)
+Defined in: [index.ts:15](https://github.com/Xunnamius/mongo-utils/blob/61eaaa91357753eefdb0e76f611558f417e7cbc4/packages/mongo-item/src/index.ts#L15)
 
 Represents the value of the `_id` property of a MongoDB collection entry.
 Optionally, a key other than `_id` can be specified using the `{ key: ...,
