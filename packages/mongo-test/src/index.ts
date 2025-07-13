@@ -136,11 +136,17 @@ export function setupMemoryServerOverride({
   /**
    * If `true`, the `beforeEach` and `afterEach` lifecycle hooks are skipped and
    * the database is initialized and hydrated once before all tests are run.
+   *
    * **In this mode, all tests will share the same database state!**
+   *
+   * To start off with a fully functional mongodb memory server client but
+   * without any initialization tasks being run whatsoever, set `defer:
+   * 'without-initialization'`. In this scenario, consider calling
+   * `reinitializeServer` manually, if necessary.
    *
    * @default false
    */
-  defer?: boolean;
+  defer?: boolean | 'without-initialization';
   /**
    * Passed to `setSchemaConfig` at the appropriate point: during
    * `jest.beforeEach` and `jest.beforeAll` but before this function interacts
@@ -233,7 +239,7 @@ export function setupMemoryServerOverride({
         }
 
         setToSharedMemory('client', await MongoClient.connect(uri));
-        if (defer) await reinitializeServer();
+        if (defer && defer !== 'without-initialization') await reinitializeServer();
       }
     } catch (error) {
       errored = true;
