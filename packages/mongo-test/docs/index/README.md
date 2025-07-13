@@ -10,6 +10,8 @@
 
 - [DummyData](type-aliases/DummyData.md)
 - [Functionable](type-aliases/Functionable.md)
+- [SetupMemoryServerOverrideOptions](type-aliases/SetupMemoryServerOverrideOptions.md)
+- [SetupMemoryServerOverrideReturnType](type-aliases/SetupMemoryServerOverrideReturnType.md)
 
 ## Functions
 
