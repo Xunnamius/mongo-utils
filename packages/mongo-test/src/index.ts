@@ -77,15 +77,29 @@ export type SetupMemoryServerOverrideOptions = {
 
 export type SetupMemoryServerOverrideReturnType = {
   /**
-   * Initialize the in-memory mongodb memory server and override internal memory
-   * so that it is used. This function must be called at least once before any
-   * attempt is made to connect to the underlying database.
+   * Initialize a dummy in-memory mongodb memory server and client and override
+   * internal memory so that all mongo-related tooling uses them. This function
+   * must be called at least once before any attempt is made to connect or
+   * initialize any underlying databases.
+   *
+   * **WARNING: invoking this function more than once without also calling
+   * `killMemoryServerOverride` in-between invocations may lead to undefined
+   * behavior.**
    */
   initializeMemoryServerOverride: () => Promise<void>;
   /**
-   * Reset the dummy MongoDb server databases back to their initial states.
+   * Calls {@link closeClient}, and then {@link MongoMemoryServer.stop} on the
+   * internal mongodb memory server.
+   *
+   * This function is always called once automatically by Jest via the
+   * `afterAll` hook.
    */
-  reinitializeServer: () => Promise<void>;
+  killMemoryServerOverride: () => Promise<void>;
+  /**
+   * Reset the dummy mongodb server databases back to their initial states, but
+   * leave the internal server-client connection alone.
+   */
+  reinitializeServerDatabases: () => Promise<void>;
   /**
    * Dangerously resets internal memory shared across `@-xun/mongo-X` packages
    * to its initial state.
@@ -193,34 +207,25 @@ export async function hydrateDbWithDummyData({
  * Setup per-test versions of the mongodb client and database connections using
  * jest lifecycle hooks.
  *
- * **WARNING:** you must call `initializeMemoryServerOverride` manually!
+ * If using `defer: 'without-initialization'`, `initializeMemoryServerOverride`
+ * must be called manually at least once.
  *
- * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, it must
- * be called _before_ `setupMemoryServerOverride`!
- */
-export function setupMemoryServerOverride(
-  options: SetupMemoryServerOverrideOptions & { defer: 'without-initialization' }
-): SetupMemoryServerOverrideReturnType;
-/**
- * Setup per-test versions of the mongodb client and database connections using
- * jest lifecycle hooks.
- *
- * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, it must
- * be called _before_ `setupMemoryServerOverride`!
+ * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
+ * must be invoked _before_ `setupMemoryServerOverride`!
  */
 export function setupMemoryServerOverride(
   options?: SetupMemoryServerOverrideOptions
-): Omit<SetupMemoryServerOverrideReturnType, 'initializeMemoryServerOverride'>;
+): SetupMemoryServerOverrideReturnType;
 export function setupMemoryServerOverride({
   defer,
   schema,
   data
 }: SetupMemoryServerOverrideOptions = {}): SetupMemoryServerOverrideReturnType {
-  // ? If an error (like a bad schema config or misconfigured dummy dataset) ?
-  // occurs at any point (e.g. in one of the hooks), the other hooks should ?
-  // become noops. Without this, test database state may leak outside the test ?
-  // environment. If an .env file is defined, test state could leak into a ?
-  // real mongodb instance (super bad!!!)
+  // ? If an error (like a bad schema config or misconfigured dummy dataset)
+  // ? occurs at any point (e.g. in one of the hooks), the other hooks should
+  // ? become noops. Without this, test database state may leak outside the test
+  // ? environment. If an .env file is defined, test state could leak into a
+  // ? real mongodb instance (super bad!!!)
   let errored = false;
 
   const debugPort = getEnv().MONGODB_MS_PORT;
@@ -233,19 +238,16 @@ export function setupMemoryServerOverride({
   debug(`using ${port ? `port ${port}` : 'random port'} for mongo memory server`);
 
   // * The in-memory server is not started until it's needed later on
-  const server = new MongoMemoryServer({
-    instance: {
-      port
-      // ? MongoDB errors WITHOUT this line as of version 4.x ? However, MongoDB
-      // errors WITH this line as of version 5.x 🙃 args:
-      // ['--enableMajorityReadConcern=0']
-    }
-  });
+  let server = undefined as MongoMemoryServer | undefined;
 
   beforeAll(async () => {
     try {
       if (errored) {
         debug.warn('"beforeAll" jest lifecycle hook was skipped due to previous errors');
+      } else if (defer === 'without-initialization') {
+        debug.warn(
+          '"beforeAll" jest lifecycle hook was skipped due to defer === "without-initialization"'
+        );
       } else {
         await initializeMemoryServerOverride();
       }
@@ -265,7 +267,7 @@ export function setupMemoryServerOverride({
           );
         } else {
           setSchemaAndData();
-          await reinitializeServer();
+          await reinitializeServerDatabases();
         }
       } catch (error) {
         errored = true;
@@ -277,8 +279,7 @@ export function setupMemoryServerOverride({
 
   afterAll(async () => {
     try {
-      await closeClient();
-      await server.stop({ doCleanup: true, force: true });
+      await killMemoryServerOverride();
     } catch (error) {
       errored = true;
       debug.error('an error occurred within the "afterAll" lifecycle hook');
@@ -287,27 +288,26 @@ export function setupMemoryServerOverride({
   });
 
   return {
-    /**
-     * Initialize the in-memory mongodb memory server and override internal
-     * memory so that it is used. This function must be called at least once
-     * before any attempt is made to connect to the underlying database.
-     */
     initializeMemoryServerOverride,
-    /**
-     * Reset the dummy MongoDb server databases back to their initial states.
-     */
-    reinitializeServer,
-    /**
-     * Dangerously resets internal memory shared across `@-xun/mongo-X` packages
-     * to its initial state.
-     */
+    killMemoryServerOverride,
+    reinitializeServerDatabases,
     resetSharedMemory,
     schema: typeof schema === 'function' ? schema() : schema,
     data: typeof data === 'function' ? data() : data
   };
 
   async function initializeMemoryServerOverride() {
+    server = new MongoMemoryServer({
+      instance: {
+        port
+        // ? Mongo errors WITHOUT this line as of version 4.x. However, mongodb
+        // ? errors WITH this line as of version 5.x 🙃
+        // args: ['--enableMajorityReadConcern=0']
+      }
+    });
+
     await server.ensureInstance();
+
     const uri = server.getUri();
     debug(`connecting to in-memory dummy mongo server at ${uri}`);
 
@@ -319,11 +319,19 @@ export function setupMemoryServerOverride({
     setToSharedMemory('client', await MongoClient.connect(uri));
 
     if (defer && defer !== 'without-initialization') {
-      await reinitializeServer();
+      await reinitializeServerDatabases();
     }
   }
 
-  async function reinitializeServer() {
+  async function killMemoryServerOverride() {
+    try {
+      await closeClient();
+    } finally {
+      await server?.stop({ doCleanup: true, force: true });
+    }
+  }
+
+  async function reinitializeServerDatabases() {
     debug('reinitializing mongo databases');
 
     const databases = Object.keys(getSchemaConfig().databases);
