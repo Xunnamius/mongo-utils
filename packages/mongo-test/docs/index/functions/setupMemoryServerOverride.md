@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`__namedParameters`): `object`
 
-Defined in: [mongo-test/src/index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/559b246432df18da9c3d5d9344e5d27c47d14486/packages/mongo-test/src/index.ts#L131)
+Defined in: [mongo-test/src/index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/a6c2112fab3deadd3d025a547cf8d9c912b8daa6/packages/mongo-test/src/index.ts#L131)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
@@ -35,11 +35,17 @@ If calling `setDummyData` manually, it must be called _before_
 
 #### defer?
 
-`boolean`
+`boolean` \| `"without-initialization"`
 
 If `true`, the `beforeEach` and `afterEach` lifecycle hooks are skipped and
 the database is initialized and hydrated once before all tests are run.
+
 **In this mode, all tests will share the same database state!**
+
+To start off with a fully functional mongodb memory server client but
+without any initialization tasks being run whatsoever, set `defer:
+'without-initialization'`. In this scenario, consider calling
+`reinitializeServer` manually, if necessary.
 
 **Default**
 
