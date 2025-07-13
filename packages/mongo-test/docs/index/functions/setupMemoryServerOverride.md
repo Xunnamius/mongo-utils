@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`__namedParameters`): `object`
 
-Defined in: [mongo-test/src/index.ts:127](https://github.com/Xunnamius/mongo-utils/blob/3a5cac73fd75d1f2fbf8f394bf95134975945ba3/packages/mongo-test/src/index.ts#L127)
+Defined in: [mongo-test/src/index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/7cfa70e74faea87417478ce206acc46284349fd3/packages/mongo-test/src/index.ts#L131)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
@@ -65,7 +65,7 @@ If calling `setSchemaConfig` manually, it must be called _before_
 
 ### data
 
-> **data**: `undefined` \| [`Functionable`](../type-aliases/Functionable.md)\<[`DummyData`](../type-aliases/DummyData.md)\>
+> **data**: `undefined` \| [`DummyData`](../type-aliases/DummyData.md)
 
 ### reinitializeServer()
 
@@ -79,6 +79,19 @@ Reset the dummy MongoDb server databases back to their initial states.
 
 `Promise`\<`void`\>
 
+### resetSharedMemory()
+
+> **resetSharedMemory**: () => `void`
+
+Dangerously resets internal memory shared across `@-xun/mongo-X` packages
+to its initial state.
+
+Resets shared memory to its initial state.
+
+#### Returns
+
+`void`
+
 ### schema
 
-> **schema**: `undefined` \| [`Functionable`](../type-aliases/Functionable.md)\<`DbSchema`\>
+> **schema**: `undefined` \| `DbSchema`
