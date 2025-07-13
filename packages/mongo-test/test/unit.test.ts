@@ -472,6 +472,16 @@ describe('::setupMemoryServerOverride', () => {
       await withMockedEnv(
         async () => {
           setupMemoryServerOverride();
+
+          // eslint-disable-next-line jest/unbound-method
+          asMocked(mockedMongoMemoryServer.getUri).mockImplementation(
+            () => 'mongo-ms-uri:5678'
+          );
+
+          await asMocked(beforeAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
           expect(mockMongoMemoryServer).toHaveBeenCalledWith({
             instance: expect.objectContaining({ port: 5678 })
           });
