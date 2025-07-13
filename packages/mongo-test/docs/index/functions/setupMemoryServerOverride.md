@@ -6,48 +6,25 @@
 
 # Function: setupMemoryServerOverride()
 
-## Call Signature
+> **setupMemoryServerOverride**(`options?`): [`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)
 
-> **setupMemoryServerOverride**(`options`): [`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)
-
-Defined in: [mongo-test/src/index.ts:201](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L201)
+Defined in: [mongo-test/src/index.ts:216](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/mongo-test/src/index.ts#L216)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
 
-**WARNING:** you must call `initializeMemoryServerOverride` manually!
+If using `defer: 'without-initialization'`, `initializeMemoryServerOverride`
+must be called manually at least once.
 
-**WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, it must
-be called _before_ `setupMemoryServerOverride`!
+**WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
+must be invoked _before_ `setupMemoryServerOverride`!
 
-### Parameters
+## Parameters
 
-#### options
-
-[`SetupMemoryServerOverrideOptions`](../type-aliases/SetupMemoryServerOverrideOptions.md) & `object`
-
-### Returns
-
-[`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)
-
-## Call Signature
-
-> **setupMemoryServerOverride**(`options?`): `Omit`\<[`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md), `"initializeMemoryServerOverride"`\>
-
-Defined in: [mongo-test/src/index.ts:211](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L211)
-
-Setup per-test versions of the mongodb client and database connections using
-jest lifecycle hooks.
-
-**WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, it must
-be called _before_ `setupMemoryServerOverride`!
-
-### Parameters
-
-#### options?
+### options?
 
 [`SetupMemoryServerOverrideOptions`](../type-aliases/SetupMemoryServerOverrideOptions.md)
 
-### Returns
+## Returns
 
-`Omit`\<[`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md), `"initializeMemoryServerOverride"`\>
+[`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)

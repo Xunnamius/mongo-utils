@@ -8,7 +8,7 @@
 
 > **SetupMemoryServerOverrideOptions** = `object`
 
-Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L38)
+Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/mongo-test/src/index.ts#L38)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-util
 
 > `optional` **data**: [`Functionable`](Functionable.md)\<[`DummyData`](DummyData.md)\>
 
-Defined in: [mongo-test/src/index.ts:75](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L75)
+Defined in: [mongo-test/src/index.ts:75](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/mongo-test/src/index.ts#L75)
 
 Passed to `setDummyData` at the appropriate point: during `jest.beforeEach`
 and `jest.beforeAll` but before this function interacts with the database.
@@ -33,7 +33,7 @@ If calling `setDummyData` manually, it must be called _before_
 
 > `optional` **defer**: `boolean` \| `"without-initialization"`
 
-Defined in: [mongo-test/src/index.ts:52](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L52)
+Defined in: [mongo-test/src/index.ts:52](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/mongo-test/src/index.ts#L52)
 
 If `true`, the `beforeEach` and `afterEach` lifecycle hooks are skipped and
 the database is initialized and hydrated once before all tests are run.
@@ -57,7 +57,7 @@ false
 
 > `optional` **schema**: [`Functionable`](Functionable.md)\<`DbSchema`\>
 
-Defined in: [mongo-test/src/index.ts:64](https://github.com/Xunnamius/mongo-utils/blob/2c2d08fac5a6c27f61576027effcc96f7546f6a8/packages/mongo-test/src/index.ts#L64)
+Defined in: [mongo-test/src/index.ts:64](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/mongo-test/src/index.ts#L64)
 
 Passed to `setSchemaConfig` at the appropriate point: during
 `jest.beforeEach` and `jest.beforeAll` but before this function interacts
