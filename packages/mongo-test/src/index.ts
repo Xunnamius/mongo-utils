@@ -19,7 +19,11 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createDebugLogger } from 'rejoinder';
 
-import { getFromSharedMemory, setToSharedMemory } from 'multiverse+shared:memory.ts';
+import {
+  getFromSharedMemory,
+  resetSharedMemory,
+  setToSharedMemory
+} from 'multiverse+shared:memory.ts';
 
 import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
@@ -255,8 +259,13 @@ export function setupMemoryServerOverride({
      * Reset the dummy MongoDb server databases back to their initial states.
      */
     reinitializeServer,
-    schema,
-    data
+    /**
+     * Dangerously resets internal memory shared across `@-xun/mongo-X` packages
+     * to its initial state.
+     */
+    resetSharedMemory,
+    schema: typeof schema === 'function' ? schema() : schema,
+    data: typeof data === 'function' ? data() : data
   };
 
   function setSchemaAndData() {

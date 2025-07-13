@@ -630,4 +630,58 @@ describe('::setupMemoryServerOverride', () => {
       afterAll = oldAfterAll;
     }
   });
+
+  it('returns reified schema and data object properties and reset function when called', async () => {
+    expect.hasAssertions();
+
+    const oldBeforeAll = beforeAll;
+    const oldBeforeEach = beforeEach;
+    const oldAfterAll = afterAll;
+
+    try {
+      // eslint-disable-next-line no-global-assign
+      beforeAll = jest.fn();
+
+      // eslint-disable-next-line no-global-assign
+      beforeEach = jest.fn();
+
+      // eslint-disable-next-line no-global-assign
+      afterAll = jest.fn();
+
+      await withMockedEnv(
+        async () => {
+          const expectedSchema: DbSchema = {
+            databases: { 'something-or-other': { collections: [] } },
+            aliases: {}
+          };
+
+          const expectedData: DummyData = {
+            'something-or-other': { _generatedAt: Date.now() }
+          };
+
+          const { schema, data, resetSharedMemory } = setupMemoryServerOverride({
+            schema: () => expectedSchema,
+            data: () => expectedData
+          });
+
+          expect(schema).toBe(expectedSchema);
+          expect(data).toBe(expectedData);
+          expect(resetSharedMemory).toBeFunction();
+        },
+        {
+          VSCODE_INSPECTOR_OPTIONS: 'exists',
+          MONGODB_MS_PORT: '5678'
+        }
+      );
+    } finally {
+      // eslint-disable-next-line no-global-assign
+      beforeAll = oldBeforeAll;
+
+      // eslint-disable-next-line no-global-assign
+      beforeEach = oldBeforeEach;
+
+      // eslint-disable-next-line no-global-assign
+      afterAll = oldAfterAll;
+    }
+  });
 });
