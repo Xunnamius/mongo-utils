@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`__namedParameters`): `object`
 
-Defined in: [mongo-test/src/index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/7cfa70e74faea87417478ce206acc46284349fd3/packages/mongo-test/src/index.ts#L131)
+Defined in: [mongo-test/src/index.ts:131](https://github.com/Xunnamius/mongo-utils/blob/559b246432df18da9c3d5d9344e5d27c47d14486/packages/mongo-test/src/index.ts#L131)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
@@ -81,12 +81,20 @@ Reset the dummy MongoDb server databases back to their initial states.
 
 ### resetSharedMemory()
 
-> **resetSharedMemory**: () => `void`
+> **resetSharedMemory**: (`__namedParameters`) => `void`
 
 Dangerously resets internal memory shared across `@-xun/mongo-X` packages
 to its initial state.
 
 Resets shared memory to its initial state.
+
+#### Parameters
+
+##### \_\_namedParameters
+
+###### preserve?
+
+keyof `SharedMemory`[] = `[]`
 
 #### Returns
 
