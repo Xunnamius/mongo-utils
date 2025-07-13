@@ -8,7 +8,7 @@
 
 > **getDb**(`__namedParameters`): `Promise`\<`Db`\>
 
-Defined in: [mongo-schema/src/index.ts:147](https://github.com/Xunnamius/mongo-utils/blob/e660bab1cfa1635b90c350f428af902be0cc655f/packages/mongo-schema/src/index.ts#L147)
+Defined in: [mongo-schema/src/index.ts:147](https://github.com/Xunnamius/mongo-utils/blob/1d7d3698d252dda690d492a169428cc4921f850e/packages/mongo-schema/src/index.ts#L147)
 
 Lazily connects to a database on-demand, memoizing the result. If the
 database does not yet exist, it is both created and initialized by this
