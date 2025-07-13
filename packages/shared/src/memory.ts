@@ -70,11 +70,25 @@ export function setToSharedMemory<T extends keyof SharedMemory>(
 /**
  * Resets shared memory to its initial state.
  */
-export function resetSharedMemory() {
-  debug('shared memory reset to blank state (was: %O)', global[$memorySymbol]);
+export function resetSharedMemory({
+  preserve = []
+}: { preserve?: (keyof SharedMemory)[] } = {}) {
+  debug('resetting shared memory reset to blank state...');
+  const oldMemory = global[$memorySymbol];
 
   global[$memorySymbol] = undefined;
-  getSharedMemoryContainer();
+  const latestMemory = getSharedMemoryContainer();
+
+  debug('shared memory reset to blank state (was: %O)', oldMemory);
+
+  if (oldMemory && preserve.length) {
+    preserve.forEach((key) => {
+      // @ts-expect-error: TypeScript is too stupid to understand this
+      latestMemory[key] = oldMemory[key];
+    });
+
+    debug('shared memory preserved values restored: %O', preserve);
+  }
 }
 
 /**
