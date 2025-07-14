@@ -42,10 +42,11 @@ export type SetupMemoryServerOverrideOptions = {
    *
    * **In this mode, all tests will share the same database state!**
    *
-   * To start off with a fully functional mongodb memory server client but
-   * without any initialization or hydration tasks being run whatsoever, set
-   * `defer: 'without-initialization'` then invoke
-   * `initializeMemoryServerOverride` manually.
+   * To start off with all of the above—i.e. a fully functional mongodb memory
+   * server and client—but without any automatic initialization, lifecycle
+   * hooks, or hydration tasks being run whatsoever, set `defer:
+   * 'without-hooks'` then invoke `initializeMemoryServerOverride` and
+   * `killMemoryServerOverride` manually.
    *
    * @default false
    */
@@ -61,7 +62,7 @@ export type SetupMemoryServerOverrideOptions = {
    * If calling `setSchemaConfig` manually, it must be called _before_
    * `setupMemoryServerOverride` calls `initializeMemoryServerOverride`
    * internally (or before `initializeMemoryServerOverride` is called manually
-   * when using `defer: 'without-initialization'`)!
+   * when using `defer: 'without-hooks'`)!
    */
   schema?: Functionable<DbSchema>;
   /**
@@ -74,7 +75,7 @@ export type SetupMemoryServerOverrideOptions = {
    * If calling `setDummyData` manually, it must be called _before_
    * `setupMemoryServerOverride` calls `initializeMemoryServerOverride`
    * internally (or before `initializeMemoryServerOverride` is called manually
-   * when using `defer: 'without-initialization'`)!
+   * when using `defer: 'without-hooks'`)!
    */
   data?: Functionable<DummyData>;
 };
@@ -82,40 +83,59 @@ export type SetupMemoryServerOverrideOptions = {
 export type SetupMemoryServerOverrideReturnType = {
   /**
    * Initialize a dummy in-memory mongodb memory server and client and override
-   * internal memory so that all mongo-related tooling uses them. This function
-   * must be called at least once before any attempt is made to connect or
-   * initialize any underlying databases.
+   * internal memory so that all mongo-related tooling uses them.
    *
-   * If using `defer` mode, you may also wish to call
-   * `reinitializeServerDatabases` afterwards to initialize the underlying
+   * If using `defer: true` mode, you do not need to call this function manually
+   * as it has already been called for you. However, you may also wish to call
+   * `reinitializeServerDatabases` at some point to initialize the underlying
    * databases and collections.
+   *
+   * If using `defer: 'without-hooks'` mode, nothing is called for you. That is:
+   * this function _must_ be called at least once before any attempt is made to
+   * connect or initialize any underlying databases (such as with
+   * `reinitializeServerDatabases`); afterwards, `killMemoryServerOverride` must
+   * be called at least once, and must always be called before calling
+   * `initializeMemoryServerOverride` again.
    *
    * **WARNING: invoking this function more than once without also calling
    * `killMemoryServerOverride` in-between invocations may lead to undefined
    * behavior.**
    *
-   * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
-   * can be invoked after `initializeMemoryServerOverride` is called, but _must
-   * be invoked before `reinitializeServerDatabases` is called_ when using
-   * `defer` mode.
+   * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually in
+   * `defer` mode, they can be invoked after `initializeMemoryServerOverride` is
+   * called, but _must be invoked before `reinitializeServerDatabases` is
+   * called_. On the other hand, if calling said functions manually when _not_
+   * in `defer` mode, they _must be invoked before `setupMemoryServerOverride`
+   * is called_.
    */
   initializeMemoryServerOverride: () => Promise<void>;
   /**
    * Calls `closeClient`, and then `MongoMemoryServer`stop} on the internal
    * mongodb memory server.
    *
-   * This function is always called once automatically by Jest via the
-   * `afterAll` hook.
+   * This function is called automatically by Jest via the `afterAll` hook when
+   * _not_ in `defer: 'without-hooks'` mode.
+   *
+   * **WARNING: when in `defer: 'without-hooks'` mode, this function _must_ be
+   * called manually at least once before the relevant testing runtime/scope
+   * concludes (e.g. using Jest's `afterAll` hook) or you risk memory leaks.**
    */
   killMemoryServerOverride: () => Promise<void>;
   /**
    * Reset the dummy mongodb server databases back to their initial states, but
    * leave the internal server-client connection alone.
+   *
+   * This function is called automatically by Jest via the `beforeAll` hook
+   * _unless_ in `defer: 'without-hooks'` mode. This function is called again by
+   * Jest via the `beforeEach` hook _except_ when in `defer` mode (i.e. both
+   * `defer: true` or `defer: 'without-hooks'`).
    */
   reinitializeServerDatabases: () => Promise<void>;
   /**
    * Dangerously resets internal memory shared across `@-xun/mongo-X` packages
    * to its initial state.
+   *
+   * This is an exposed internal method that should be used very carefully.
    */
   resetSharedMemory: typeof resetSharedMemory;
   /**
@@ -220,8 +240,8 @@ export async function hydrateDbWithDummyData({
  * Setup per-test versions of the mongodb client and database connections using
  * jest lifecycle hooks.
  *
- * If using `defer: 'without-initialization'`, `initializeMemoryServerOverride`
- * must be called manually at least once.
+ * If using `defer: 'without-hooks'` mode specifically,
+ * `initializeMemoryServerOverride` must be called manually at least once.
  *
  * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
  * must be invoked _before_ `setupMemoryServerOverride` is called. When using
@@ -237,11 +257,11 @@ export function setupMemoryServerOverride({
   schema,
   data
 }: SetupMemoryServerOverrideOptions = {}): SetupMemoryServerOverrideReturnType {
-  // ? If an error (like a bad schema config or misconfigured dummy dataset) ?
-  // occurs at any point (e.g. in one of the hooks), the other hooks should ?
-  // become noops. Without this, test database state may leak outside the test ?
-  // environment. If an .env file is defined, test state could leak into a ?
-  // real mongodb instance (super bad!!!)
+  // ? If an error (like a bad schema config or misconfigured dummy dataset)
+  // ? occurs at any point (e.g. in one of the hooks), the other hooks should
+  // ? become noops. Without this, test database state may leak outside the test
+  // ? environment. If an .env file is defined, test state could leak into a
+  // ? real mongodb instance (super bad!!!)
   let errored = false;
 
   const debugPort = getEnv().MONGODB_MS_PORT;
@@ -396,8 +416,9 @@ export function setupMemoryServerOverride({
  */
 export function generateMockSensitiveObjectId() {
   // * Adopted from ObjectId::generate function. Turns out this is the cause of
-  // * some flakiness with tests where order is determined by ObjectId. ? The
-  //   "replacement" for the deprecated constructor returns something else
-  //   eslint-disable-next-line @typescript-eslint/no-deprecated
+  // * some flakiness with tests where order is determined by ObjectId.
+
+  // ? The "replacement" for the "deprecated" constructor returns something else
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   return new ObjectId(Math.floor(mockDateNowMs / 1000));
 }
