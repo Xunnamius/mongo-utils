@@ -8,7 +8,7 @@
 
 > **SetupMemoryServerOverrideOptions** = `object`
 
-Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-utils/blob/3343ce66b0dc9028c5726affd9e45509aa5b1201/packages/mongo-test/src/index.ts#L38)
+Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-utils/blob/2dfe9a5821aec455c625ca725941516da4c8d29f/packages/mongo-test/src/index.ts#L38)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [mongo-test/src/index.ts:38](https://github.com/Xunnamius/mongo-util
 
 > `optional` **data**: [`Functionable`](Functionable.md)\<[`DummyData`](DummyData.md)\>
 
-Defined in: [mongo-test/src/index.ts:75](https://github.com/Xunnamius/mongo-utils/blob/3343ce66b0dc9028c5726affd9e45509aa5b1201/packages/mongo-test/src/index.ts#L75)
+Defined in: [mongo-test/src/index.ts:79](https://github.com/Xunnamius/mongo-utils/blob/2dfe9a5821aec455c625ca725941516da4c8d29f/packages/mongo-test/src/index.ts#L79)
 
 Passed to `setDummyData` at the appropriate point: during `jest.beforeEach`
 and `jest.beforeAll` but before this function interacts with the database.
@@ -25,7 +25,9 @@ This data is only written once during `jest.beforeAll` if `defer` is
 `true`.
 
 If calling `setDummyData` manually, it must be called _before_
-`setupMemoryServerOverride`!
+`setupMemoryServerOverride` calls `initializeMemoryServerOverride`
+internally (or before `initializeMemoryServerOverride` is called manually
+when using `defer: 'without-initialization'`)!
 
 ***
 
@@ -33,7 +35,7 @@ If calling `setDummyData` manually, it must be called _before_
 
 > `optional` **defer**: `boolean` \| `"without-initialization"`
 
-Defined in: [mongo-test/src/index.ts:52](https://github.com/Xunnamius/mongo-utils/blob/3343ce66b0dc9028c5726affd9e45509aa5b1201/packages/mongo-test/src/index.ts#L52)
+Defined in: [mongo-test/src/index.ts:52](https://github.com/Xunnamius/mongo-utils/blob/2dfe9a5821aec455c625ca725941516da4c8d29f/packages/mongo-test/src/index.ts#L52)
 
 If `true`, the `beforeEach` and `afterEach` lifecycle hooks are skipped and
 the database is initialized and hydrated once before all tests are run.
@@ -57,7 +59,7 @@ false
 
 > `optional` **schema**: [`Functionable`](Functionable.md)\<`DbSchema`\>
 
-Defined in: [mongo-test/src/index.ts:64](https://github.com/Xunnamius/mongo-utils/blob/3343ce66b0dc9028c5726affd9e45509aa5b1201/packages/mongo-test/src/index.ts#L64)
+Defined in: [mongo-test/src/index.ts:66](https://github.com/Xunnamius/mongo-utils/blob/2dfe9a5821aec455c625ca725941516da4c8d29f/packages/mongo-test/src/index.ts#L66)
 
 Passed to `setSchemaConfig` at the appropriate point: during
 `jest.beforeEach` and `jest.beforeAll` but before this function interacts
@@ -67,4 +69,6 @@ This data is only written once during `jest.beforeAll` if `defer` is
 `true`.
 
 If calling `setSchemaConfig` manually, it must be called _before_
-`setupMemoryServerOverride`!
+`setupMemoryServerOverride` calls `initializeMemoryServerOverride`
+internally (or before `initializeMemoryServerOverride` is called manually
+when using `defer: 'without-initialization'`)!
