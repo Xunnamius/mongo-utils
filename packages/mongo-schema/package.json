@@ -78,6 +78,7 @@
   "dependencies": {
     "@-xun/api-error": "^1.1.1",
     "@-xun/env": "^1.1.2",
+    "@-xun/types": "^1.2.0",
     "core-js": "^3.44.0",
     "mongodb": "^6.17.0",
     "rejoinder": "^2.0.2"
