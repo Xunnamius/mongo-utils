@@ -53,12 +53,12 @@ export function setupForcedMultitenancyOverride(mode: SharedMemory['mode']) {
  *
  * This is useful when running multiple `@-xun/mongo-*` with disparate global
  * configurations within the same JavaScript runtime environment, since it lets
- * each group of calls to setup and use its own version of "global" "shared"
+ * each group of calls to use its own version of "global" "shared"
  * configuration.
  *
- * Invoking this function multiple times with the same `tenantId` each
+ * When invoking this function multiple times with the same `tenantId`, each
  * invocation will reuse the respective "global shared" configuration first
- * created for said identifier. This means different invocations of
+ * created for that `tenantId`. This means different invocations of
  * `runWithMongoSchemaMultitenancy` using the same `tenantId` will also share
  * the same "global" configuration.
  *
