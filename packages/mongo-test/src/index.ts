@@ -342,7 +342,7 @@ export function setupMemoryServerOverride({
     setSchemaAndData();
     setToSharedMemory('client', await MongoClient.connect(uri));
 
-    if (defer && defer !== 'without-initialization') {
+    if (defer !== 'without-hooks') {
       await reinitializeServerDatabases();
     }
   }
