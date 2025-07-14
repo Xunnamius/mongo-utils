@@ -89,6 +89,10 @@ export type SetupMemoryServerOverrideReturnType = {
    * **WARNING: invoking this function more than once without also calling
    * `killMemoryServerOverride` in-between invocations may lead to undefined
    * behavior.**
+   *
+   * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
+   * must be invoked before `initializeMemoryServerOverride` is called manually
+   * when using `defer: 'without-initialization'`!
    */
   initializeMemoryServerOverride: () => Promise<void>;
   /**
