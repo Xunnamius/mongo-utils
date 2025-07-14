@@ -8,7 +8,7 @@
 
 > **DummyData** = `object`
 
-Defined in: [shared/src/schema.ts:57](https://github.com/Xunnamius/mongo-utils/blob/7bdf5df8efa1ef93abd7bb3fdb53c4692e49a788/packages/shared/src/schema.ts#L57)
+Defined in: [shared/src/schema.ts:57](https://github.com/Xunnamius/mongo-utils/blob/3343ce66b0dc9028c5726affd9e45509aa5b1201/packages/shared/src/schema.ts#L57)
 
 Generic dummy data used to hydrate databases and their collections.
 
