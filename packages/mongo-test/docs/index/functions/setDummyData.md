@@ -8,7 +8,7 @@
 
 > **setDummyData**(`schemaFn`): `void`
 
-Defined in: [mongo-test/src/index.ts:140](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L140)
+Defined in: [packages/mongo-test/src/index.ts:160](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L160)
 
 Sets global dummy data singleton (which already includes some built-in
 defaults).

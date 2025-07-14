@@ -8,7 +8,7 @@
 
 > **SetupMemoryServerOverrideReturnType** = `object`
 
-Defined in: [mongo-test/src/index.ts:82](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L82)
+Defined in: [packages/mongo-test/src/index.ts:83](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L83)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [mongo-test/src/index.ts:82](https://github.com/Xunnamius/mongo-util
 
 > **data**: [`DummyData`](DummyData.md) \| `undefined`
 
-Defined in: [mongo-test/src/index.ts:130](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L130)
+Defined in: [packages/mongo-test/src/index.ts:150](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L150)
 
 Reified dummy data object (i.e. what was passed to
 `setupMemoryServerOverride` resolved to an object).
@@ -27,25 +27,33 @@ Reified dummy data object (i.e. what was passed to
 
 > **initializeMemoryServerOverride**: () => `Promise`\<`void`\>
 
-Defined in: [mongo-test/src/index.ts:102](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L102)
+Defined in: [packages/mongo-test/src/index.ts:111](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L111)
 
 Initialize a dummy in-memory mongodb memory server and client and override
-internal memory so that all mongo-related tooling uses them. This function
-must be called at least once before any attempt is made to connect or
-initialize any underlying databases.
+internal memory so that all mongo-related tooling uses them.
 
-If using `defer` mode, you may also wish to call
-`reinitializeServerDatabases` afterwards to initialize the underlying
+If using `defer: true` mode, you do not need to call this function manually
+as it has already been called for you. However, you may also wish to call
+`reinitializeServerDatabases` at some point to initialize the underlying
 databases and collections.
+
+If using `defer: 'without-hooks'` mode, nothing is called for you. That is:
+this function _must_ be called at least once before any attempt is made to
+connect or initialize any underlying databases (such as with
+`reinitializeServerDatabases`); afterwards, `killMemoryServerOverride` must
+be called at least once, and must always be called before calling
+`initializeMemoryServerOverride` again.
 
 **WARNING: invoking this function more than once without also calling
 `killMemoryServerOverride` in-between invocations may lead to undefined
 behavior.**
 
-**WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
-can be invoked after `initializeMemoryServerOverride` is called, but _must
-be invoked before `reinitializeServerDatabases` is called_ when using
-`defer` mode.
+**WARNING:** if calling `setSchemaConfig` or `setDummyData` manually in
+`defer` mode, they can be invoked after `initializeMemoryServerOverride` is
+called, but _must be invoked before `reinitializeServerDatabases` is
+called_. On the other hand, if calling said functions manually when _not_
+in `defer` mode, they _must be invoked before `setupMemoryServerOverride`
+is called_.
 
 #### Returns
 
@@ -57,13 +65,17 @@ be invoked before `reinitializeServerDatabases` is called_ when using
 
 > **killMemoryServerOverride**: () => `Promise`\<`void`\>
 
-Defined in: [mongo-test/src/index.ts:110](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L110)
+Defined in: [packages/mongo-test/src/index.ts:123](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L123)
 
 Calls `closeClient`, and then `MongoMemoryServer`stop} on the internal
 mongodb memory server.
 
-This function is always called once automatically by Jest via the
-`afterAll` hook.
+This function is called automatically by Jest via the `afterAll` hook when
+_not_ in `defer: 'without-hooks'` mode.
+
+**WARNING: when in `defer: 'without-hooks'` mode, this function _must_ be
+called manually at least once before the relevant testing runtime/scope
+concludes (e.g. using Jest's `afterAll` hook) or you risk memory leaks.**
 
 #### Returns
 
@@ -75,10 +87,15 @@ This function is always called once automatically by Jest via the
 
 > **reinitializeServerDatabases**: () => `Promise`\<`void`\>
 
-Defined in: [mongo-test/src/index.ts:115](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L115)
+Defined in: [packages/mongo-test/src/index.ts:133](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L133)
 
 Reset the dummy mongodb server databases back to their initial states, but
 leave the internal server-client connection alone.
+
+This function is called automatically by Jest via the `beforeAll` hook
+_unless_ in `defer: 'without-hooks'` mode. This function is called again by
+Jest via the `beforeEach` hook _except_ when in `defer` mode (i.e. both
+`defer: true` or `defer: 'without-hooks'`).
 
 #### Returns
 
@@ -90,10 +107,12 @@ leave the internal server-client connection alone.
 
 > **resetSharedMemory**: *typeof* `resetSharedMemory`
 
-Defined in: [mongo-test/src/index.ts:120](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L120)
+Defined in: [packages/mongo-test/src/index.ts:140](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L140)
 
 Dangerously resets internal memory shared across `@-xun/mongo-X` packages
 to its initial state.
+
+This is an exposed internal method that should be used very carefully.
 
 ***
 
@@ -101,7 +120,7 @@ to its initial state.
 
 > **schema**: `DbSchema` \| `undefined`
 
-Defined in: [mongo-test/src/index.ts:125](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L125)
+Defined in: [packages/mongo-test/src/index.ts:145](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L145)
 
 Reified schema object (i.e. what was passed to `setupMemoryServerOverride`
 resolved to an object).
