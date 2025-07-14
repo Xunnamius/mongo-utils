@@ -187,10 +187,8 @@ export async function getDb({
 
 /**
  * Drops a database, destroying its collections. If the database does not exist
- * before calling this function, it will be created first then dropped.
- *
- * Note that this function does not clear the destroyed database's Db instance
- * from internal memory.
+ * in shared memory before calling this function, this function becomes a no-op
+ * (but still returns `true`).
  */
 export async function destroyDb({
   name
@@ -202,10 +200,16 @@ export async function destroyDb({
 }) {
   const nameActual = getNameFromAlias(name);
   debug(`destroying database "${nameActual}" and its collections`);
-  return (
-    !getFromSharedMemory('databases')[nameActual] ||
-    (await getDb({ name })).dropDatabase()
-  );
+
+  if (getFromSharedMemory('databases')[nameActual]) {
+    const db = await getDb({ name, initialize: false });
+
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete getFromSharedMemory('databases')[nameActual];
+    return db.dropDatabase();
+  }
+
+  return true;
 }
 
 /**

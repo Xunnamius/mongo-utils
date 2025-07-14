@@ -152,7 +152,7 @@ describe('::getDb', () => {
 });
 
 describe('::closeClient', () => {
-  it('closes client and deletes memory', async () => {
+  it('closes client and resets all memory', async () => {
     expect.hasAssertions();
 
     await withMockedEnv(
@@ -168,7 +168,7 @@ describe('::closeClient', () => {
 });
 
 describe('::destroyDb', () => {
-  it('drops database', async () => {
+  it('drops a database and resets its entry in memory', async () => {
     expect.hasAssertions();
 
     await withMockedEnv(
@@ -179,6 +179,7 @@ describe('::destroyDb', () => {
         expect(db.dropDatabase).toHaveBeenCalledTimes(0);
         await destroyDb({ name: 'fake-db-1' });
         expect(db.dropDatabase).toHaveBeenCalledTimes(1);
+        await expect(getDb({ name: 'fake-db-1' })).resolves.not.toBe(db);
       },
       { MONGODB_URI: 'abc' }
     );
@@ -276,5 +277,13 @@ describe('::initializeDb', () => {
       },
       { MONGODB_URI: 'abc' }
     );
+  });
+});
+
+describe('/context', () => {
+  describe('::???', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
   });
 });
