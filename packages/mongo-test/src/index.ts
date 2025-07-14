@@ -86,18 +86,23 @@ export type SetupMemoryServerOverrideReturnType = {
    * must be called at least once before any attempt is made to connect or
    * initialize any underlying databases.
    *
+   * If using `defer` mode, you may also wish to call
+   * `reinitializeServerDatabases` afterwards to initialize the underlying
+   * databases and collections.
+   *
    * **WARNING: invoking this function more than once without also calling
    * `killMemoryServerOverride` in-between invocations may lead to undefined
    * behavior.**
    *
    * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
-   * must be invoked before `initializeMemoryServerOverride` is called manually
-   * when using `defer: 'without-initialization'`!
+   * can be invoked after `initializeMemoryServerOverride` is called, but _must
+   * be invoked before `reinitializeServerDatabases` is called_ when using
+   * `defer` mode.
    */
   initializeMemoryServerOverride: () => Promise<void>;
   /**
-   * Calls {@link closeClient}, and then {@link MongoMemoryServer.stop} on the
-   * internal mongodb memory server.
+   * Calls `closeClient`, and then `MongoMemoryServer`stop} on the internal
+   * mongodb memory server.
    *
    * This function is always called once automatically by Jest via the
    * `afterAll` hook.
@@ -150,8 +155,8 @@ export function getDummyData(): DummyData {
 }
 
 /**
- * Fill an initialized database with data. You should call {@link initializeDb}
- * before calling this function.
+ * Fill an initialized database with data. You should call `initializeDb` before
+ * calling this function.
  */
 export async function hydrateDbWithDummyData({
   name
@@ -219,10 +224,10 @@ export async function hydrateDbWithDummyData({
  * must be called manually at least once.
  *
  * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
- * must be invoked _before_ `setupMemoryServerOverride` calls
- * `initializeMemoryServerOverride` internally (or before
- * `initializeMemoryServerOverride` is called manually when using `defer:
- * 'without-initialization'`)!
+ * must be invoked _before_ `setupMemoryServerOverride` is called. When using
+ * `defer` mode, `setSchemaConfig` and `setDummyData` can be invoked after
+ * `initializeMemoryServerOverride` is called but _must be invoked before
+ * `reinitializeServerDatabases` is called_.
  */
 export function setupMemoryServerOverride(
   options?: SetupMemoryServerOverrideOptions
@@ -232,11 +237,11 @@ export function setupMemoryServerOverride({
   schema,
   data
 }: SetupMemoryServerOverrideOptions = {}): SetupMemoryServerOverrideReturnType {
-  // ? If an error (like a bad schema config or misconfigured dummy dataset)
-  // ? occurs at any point (e.g. in one of the hooks), the other hooks should
-  // ? become noops. Without this, test database state may leak outside the test
-  // ? environment. If an .env file is defined, test state could leak into a
-  // ? real mongodb instance (super bad!!!)
+  // ? If an error (like a bad schema config or misconfigured dummy dataset) ?
+  // occurs at any point (e.g. in one of the hooks), the other hooks should ?
+  // become noops. Without this, test database state may leak outside the test ?
+  // environment. If an .env file is defined, test state could leak into a ?
+  // real mongodb instance (super bad!!!)
   let errored = false;
 
   const debugPort = getEnv().MONGODB_MS_PORT;
@@ -312,8 +317,8 @@ export function setupMemoryServerOverride({
       instance: {
         port
         // ? Mongo errors WITHOUT this line as of version 4.x. However, mongodb
-        // ? errors WITH this line as of version 5.x 🙃
-        // args: ['--enableMajorityReadConcern=0']
+        // ? errors WITH this line as of version 5.x 🙃 args:
+        // ['--enableMajorityReadConcern=0']
       }
     });
 
@@ -368,19 +373,18 @@ export function setupMemoryServerOverride({
 }
 
 /**
- * Creates an {@link ObjectId} by explicitly passing `mockDateNowMs` as the
- * inception time, which is the same thing that {@link ObjectId} does internally
- * with the real `Date.now`.
+ * Creates an `ObjectId` by explicitly passing `mockDateNowMs` as the inception
+ * time, which is the same thing that `ObjectId` does internally with the real
+ * `Date.now`.
  *
  * **This should only be used in modules with import side-effects that execute
  * before `useMockDateNow` is called** later in downstream code. If you are
  * unsure, you probably don't need to use this function and should just create a
- * new {@link ObjectId} instead.
+ * new `ObjectId` instead.
  *
  * The point of this function is to avoid race conditions when mocking parts of
- * the {@link Date} object that _sometimes_ result in _later_ calls to
- * {@link ObjectId} generating IDs that were _less_ than the IDs generated
- * _before_ it.
+ * the `Date` object that _sometimes_ result in _later_ calls to `ObjectId`
+ * generating IDs that were _less_ than the IDs generated _before_ it.
  */
 export function generateMockSensitiveObjectId() {
   // * Adopted from ObjectId::generate function. Turns out this is the cause of
