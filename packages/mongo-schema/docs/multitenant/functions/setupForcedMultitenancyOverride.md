@@ -8,7 +8,7 @@
 
 > **setupForcedMultitenancyOverride**(`mode`): `void`
 
-Defined in: [mongo-schema/src/multitenant.ts:36](https://github.com/Xunnamius/mongo-utils/blob/e3ec31e0a6fc665c34c6cfcada5f75d068e58b2c/packages/mongo-schema/src/multitenant.ts#L36)
+Defined in: [mongo-schema/src/multitenant.ts:36](https://github.com/Xunnamius/mongo-utils/blob/dc008237cea91d9e0ab0ac3c2601605520a63c0f/packages/mongo-schema/src/multitenant.ts#L36)
 
 When this function is called, invocations of any function export of the
 `@-xun/mongo-*` package must be wrapped by
