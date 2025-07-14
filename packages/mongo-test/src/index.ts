@@ -59,7 +59,9 @@ export type SetupMemoryServerOverrideOptions = {
    * `true`.
    *
    * If calling `setSchemaConfig` manually, it must be called _before_
-   * `setupMemoryServerOverride`!
+   * `setupMemoryServerOverride` calls `initializeMemoryServerOverride`
+   * internally (or before `initializeMemoryServerOverride` is called manually
+   * when using `defer: 'without-initialization'`)!
    */
   schema?: Functionable<DbSchema>;
   /**
@@ -70,7 +72,9 @@ export type SetupMemoryServerOverrideOptions = {
    * `true`.
    *
    * If calling `setDummyData` manually, it must be called _before_
-   * `setupMemoryServerOverride`!
+   * `setupMemoryServerOverride` calls `initializeMemoryServerOverride`
+   * internally (or before `initializeMemoryServerOverride` is called manually
+   * when using `defer: 'without-initialization'`)!
    */
   data?: Functionable<DummyData>;
 };
@@ -211,7 +215,10 @@ export async function hydrateDbWithDummyData({
  * must be called manually at least once.
  *
  * **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
- * must be invoked _before_ `setupMemoryServerOverride`!
+ * must be invoked _before_ `setupMemoryServerOverride` calls
+ * `initializeMemoryServerOverride` internally (or before
+ * `initializeMemoryServerOverride` is called manually when using `defer:
+ * 'without-initialization'`)!
  */
 export function setupMemoryServerOverride(
   options?: SetupMemoryServerOverrideOptions
