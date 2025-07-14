@@ -27,8 +27,8 @@ import {
 
 import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
+import type { Functionable } from '@-xun/types';
 import type { Document } from 'mongodb';
-import type { Functionable } from 'multiverse+shared:memory.ts';
 import type { DbSchema, DummyData } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-test' });

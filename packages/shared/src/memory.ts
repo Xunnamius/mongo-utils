@@ -5,6 +5,7 @@ import { createDebugLogger } from 'rejoinder';
 
 import { ErrorMessage } from 'universe+shared:error.ts';
 
+import type { Functionable } from '@-xun/types';
 import type { Db, MongoClient } from 'mongodb';
 import type { DbSchema, DummyData } from 'universe+shared:schema.ts';
 
@@ -26,9 +27,6 @@ const unsettableKeys: (keyof SharedMemory)[] = [
   'asyncLocalStores',
   'asyncLocalTenantId'
 ];
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Functionable<T> = T | ((...args: any[]) => T);
 
 /**
  * A shared cache of connection, server schema, and database state.

@@ -13,7 +13,7 @@ import {
 
 import { ErrorMessage } from 'universe+mongo-schema:error.ts';
 
-import type { Functionable } from 'multiverse+shared:memory.ts';
+import type { Functionable } from '@-xun/types';
 import type { CollectionSchema, DbSchema } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-schema' });
