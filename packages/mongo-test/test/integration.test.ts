@@ -5,7 +5,7 @@ import { setDummyData, setupMemoryServerOverride } from 'universe+mongo-test';
 
 import { mockDateNowMs } from 'testverse:util.ts';
 
-beforeEach(() => {
+beforeAll(() => {
   setSchemaConfig(() => {
     return {
       databases: {
@@ -51,6 +51,8 @@ beforeEach(() => {
 });
 
 describe('[run using non-deferred setupMemoryServerOverride]', () => {
+  // ? Note that this callback to `describe` will be called BEFORE beforeEach
+  // ? but AFTER beforeAll
   setupMemoryServerOverride();
 
   test('setupMemoryServerOverride works', async () => {

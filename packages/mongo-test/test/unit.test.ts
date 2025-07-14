@@ -1,3 +1,4 @@
+/* eslint-disable jest/unbound-method */
 import { safeDeepClone } from '@-xun/js';
 import { getDb, getSchemaConfig, setSchemaConfig } from '@-xun/mongo-schema';
 import { MongoClient } from 'mongodb';
@@ -81,7 +82,6 @@ beforeEach(() => {
 
   mockMongoClient.connect = makeMockedMongoConnectMethod();
 
-  // eslint-disable-next-line jest/unbound-method
   asMocked(mockedMongoMemoryServer.getUri).mockImplementation(() => 'mongo-ms-uri:6666');
   mockMongoMemoryServer.mockImplementation(() => mockedMongoMemoryServer);
 });
@@ -324,8 +324,14 @@ describe('::setupMemoryServerOverride', () => {
       setupMemoryServerOverride({ defer: true });
 
       expect(beforeAll).toHaveBeenCalledTimes(2);
-      expect(beforeEach).toHaveBeenCalledTimes(1);
+      expect(beforeEach).toHaveBeenCalledTimes(2);
       expect(afterAll).toHaveBeenCalledTimes(2);
+
+      setupMemoryServerOverride({ defer: 'without-hooks' });
+
+      expect(beforeAll).toHaveBeenCalledTimes(3);
+      expect(beforeEach).toHaveBeenCalledTimes(3);
+      expect(afterAll).toHaveBeenCalledTimes(3);
     } finally {
       // eslint-disable-next-line no-global-assign
       beforeAll = oldBeforeAll;
@@ -340,8 +346,6 @@ describe('::setupMemoryServerOverride', () => {
 
   it('runs appropriate functionality at the appropriate points with and without args', async () => {
     expect.hasAssertions();
-
-    resetSharedMemory();
 
     const oldBeforeAll = beforeAll;
     const oldBeforeEach = beforeEach;
@@ -368,6 +372,8 @@ describe('::setupMemoryServerOverride', () => {
           .spyOn(library, 'closeClient')
           .mockImplementation(async () => undefined);
 
+        const databaseNames = Object.keys(expectedSchema.databases);
+
         // eslint-disable-next-line no-global-assign
         beforeAll = jest.fn();
 
@@ -377,68 +383,251 @@ describe('::setupMemoryServerOverride', () => {
         // eslint-disable-next-line no-global-assign
         afterAll = jest.fn();
 
-        expect(() => getSchemaConfig()).toThrow();
-        expect(() => getDummyData()).toThrow();
-
-        setupMemoryServerOverride({
-          schema: expectedSchema,
-          data: expectedData
-        });
+        resetSharedMemory();
 
         expect(() => getSchemaConfig()).toThrow();
         expect(() => getDummyData()).toThrow();
 
-        expect(beforeAll).toHaveBeenCalledTimes(1);
-        expect(beforeEach).toHaveBeenCalledTimes(1);
-        expect(afterAll).toHaveBeenCalledTimes(1);
+        expect(beforeAll).toHaveBeenCalledTimes(0);
+        expect(beforeEach).toHaveBeenCalledTimes(0);
+        expect(afterAll).toHaveBeenCalledTimes(0);
 
-        await asMocked(beforeAll).mock.calls[0]![0](
-          undefined as unknown as jest.DoneCallback
-        );
+        // * Mode: default
 
-        expect(() => getSchemaConfig()).not.toThrow();
-        expect(() => getDummyData()).not.toThrow();
+        {
+          setupMemoryServerOverride({
+            schema: expectedSchema,
+            data: expectedData
+          });
 
-        expect(destroySpy).not.toHaveBeenCalled();
-        expect(initializeDbSpy).not.toHaveBeenCalled();
-        expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
-        expect(closeClientSpy).not.toHaveBeenCalled();
+          // ? No lifecycle hooks have been invoked yet
+          expect(() => getSchemaConfig()).toThrow();
+          expect(() => getDummyData()).toThrow();
 
-        expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+          expect(beforeAll).toHaveBeenCalledTimes(1);
+          expect(beforeEach).toHaveBeenCalledTimes(1);
+          expect(afterAll).toHaveBeenCalledTimes(1);
 
-        await asMocked(afterAll).mock.calls[0]![0](
-          undefined as unknown as jest.DoneCallback
-        );
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
 
-        expect(closeClientSpy).toHaveBeenCalled();
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
 
-        expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalled();
+          await asMocked(beforeAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
 
-        setupMemoryServerOverride({ defer: true });
+          expect(() => getSchemaConfig()).not.toThrow();
+          expect(() => getDummyData()).not.toThrow();
 
-        expect(beforeAll).toHaveBeenCalledTimes(2);
-        expect(beforeEach).toHaveBeenCalledTimes(1);
-        expect(afterAll).toHaveBeenCalledTimes(2);
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
 
-        await asMocked(beforeAll).mock.calls[1]![0](
-          undefined as unknown as jest.DoneCallback
-        );
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
 
-        Object.keys(getSchemaConfig().databases).map((name) => {
-          expect(destroySpy).toHaveBeenCalledWith({ name });
-          expect(initializeDbSpy).toHaveBeenCalledWith({ name });
-          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledWith({ name });
-        });
+          await asMocked(beforeEach).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
 
-        await asMocked(afterAll).mock.calls[1]![0](
-          undefined as unknown as jest.DoneCallback
-        );
+          expect(destroySpy).toHaveBeenCalledTimes(2 * databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(2 * databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(
+            2 * databaseNames.length
+          );
 
-        expect(closeClientSpy).toHaveBeenCalledTimes(2);
-        expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalledTimes(2);
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
 
-        expect(() => getSchemaConfig()).not.toThrow();
-        expect(() => getDummyData()).not.toThrow();
+          await asMocked(afterAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).toHaveBeenCalledTimes(2 * databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(2 * databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(
+            2 * databaseNames.length
+          );
+
+          expect(closeClientSpy).toHaveBeenCalledTimes(1);
+          expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalledTimes(1);
+        }
+
+        // * Mode: `defer: true`
+
+        {
+          asMocked(beforeAll).mockClear();
+          asMocked(beforeEach).mockClear();
+          asMocked(afterAll).mockClear();
+          destroySpy.mockClear();
+          initializeDbSpy.mockClear();
+          hydrateDbWithDummyDataSpy.mockClear();
+          closeClientSpy.mockClear();
+          asMocked(mockedMongoMemoryServer.stop).mockClear();
+          resetSharedMemory();
+
+          setupMemoryServerOverride({
+            schema: expectedSchema,
+            data: expectedData,
+            defer: true
+          });
+
+          // ? No lifecycle hooks have been invoked yet
+          expect(() => getSchemaConfig()).toThrow();
+          expect(() => getDummyData()).toThrow();
+
+          expect(beforeAll).toHaveBeenCalledTimes(1);
+          expect(beforeEach).toHaveBeenCalledTimes(1);
+          expect(afterAll).toHaveBeenCalledTimes(1);
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(beforeAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(beforeEach).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(afterAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
+
+          expect(closeClientSpy).toHaveBeenCalledTimes(1);
+          expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalledTimes(1);
+
+          expect(() => getSchemaConfig()).not.toThrow();
+          expect(() => getDummyData()).not.toThrow();
+        }
+
+        // * Mode: `defer: 'without-hooks'`
+
+        {
+          asMocked(beforeAll).mockClear();
+          asMocked(beforeEach).mockClear();
+          asMocked(afterAll).mockClear();
+          destroySpy.mockClear();
+          initializeDbSpy.mockClear();
+          hydrateDbWithDummyDataSpy.mockClear();
+          closeClientSpy.mockClear();
+          asMocked(mockedMongoMemoryServer.stop).mockClear();
+          resetSharedMemory();
+
+          const {
+            initializeMemoryServerOverride,
+            reinitializeServerDatabases,
+            killMemoryServerOverride
+          } = setupMemoryServerOverride({
+            schema: expectedSchema,
+            data: expectedData,
+            defer: 'without-hooks'
+          });
+
+          // ? No lifecycle hooks have been invoked yet
+          expect(() => getSchemaConfig()).toThrow();
+          expect(() => getDummyData()).toThrow();
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(beforeAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(beforeEach).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await asMocked(afterAll).mock.calls[0]![0](
+            undefined as unknown as jest.DoneCallback
+          );
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          // ? Still not available yet in this mode
+          expect(() => getSchemaConfig()).toThrow();
+          expect(() => getDummyData()).toThrow();
+
+          await initializeMemoryServerOverride();
+
+          expect(destroySpy).not.toHaveBeenCalled();
+          expect(initializeDbSpy).not.toHaveBeenCalled();
+          expect(hydrateDbWithDummyDataSpy).not.toHaveBeenCalled();
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await reinitializeServerDatabases();
+
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
+
+          expect(closeClientSpy).not.toHaveBeenCalled();
+          expect(asMocked(mockedMongoMemoryServer.stop)).not.toHaveBeenCalled();
+
+          await killMemoryServerOverride();
+
+          expect(destroySpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(initializeDbSpy).toHaveBeenCalledTimes(databaseNames.length);
+          expect(hydrateDbWithDummyDataSpy).toHaveBeenCalledTimes(databaseNames.length);
+
+          expect(closeClientSpy).toHaveBeenCalledTimes(1);
+          expect(asMocked(mockedMongoMemoryServer.stop)).toHaveBeenCalledTimes(1);
+
+          expect(() => getSchemaConfig()).not.toThrow();
+          expect(() => getDummyData()).not.toThrow();
+        }
       });
     } finally {
       // eslint-disable-next-line no-global-assign
@@ -473,7 +662,6 @@ describe('::setupMemoryServerOverride', () => {
         async () => {
           setupMemoryServerOverride();
 
-          // eslint-disable-next-line jest/unbound-method
           asMocked(mockedMongoMemoryServer.getUri).mockImplementation(
             () => 'mongo-ms-uri:5678'
           );
@@ -520,7 +708,6 @@ describe('::setupMemoryServerOverride', () => {
       // eslint-disable-next-line no-global-assign
       afterAll = jest.fn();
 
-      // eslint-disable-next-line jest/unbound-method
       asMocked(mockedMongoMemoryServer.getUri).mockImplementationOnce(
         () => 'uri-not-ending-in-colon-5678'
       );
@@ -575,7 +762,6 @@ describe('::setupMemoryServerOverride', () => {
       // eslint-disable-next-line no-global-assign
       afterAll = jest.fn();
 
-      // eslint-disable-next-line jest/unbound-method
       asMocked(mockedMongoMemoryServer.getUri).mockImplementationOnce(
         () => 'uri-not-ending-in-colon-5678'
       );

@@ -49,7 +49,7 @@ export type SetupMemoryServerOverrideOptions = {
    *
    * @default false
    */
-  defer?: boolean | 'without-initialization';
+  defer?: boolean | 'without-hooks';
   /**
    * Passed to `setSchemaConfig` at the appropriate point: during
    * `jest.beforeEach` and `jest.beforeAll` but before this function interacts
@@ -258,12 +258,12 @@ export function setupMemoryServerOverride({
 
   beforeAll(async () => {
     try {
-      if (errored) {
-        debug.warn('"beforeAll" jest lifecycle hook was skipped due to previous errors');
-      } else if (defer === 'without-initialization') {
+      if (defer === 'without-hooks') {
         debug.warn(
-          '"beforeAll" jest lifecycle hook was skipped due to defer === "without-initialization"'
+          '"beforeAll" jest lifecycle hook was skipped due to defer === "without-hooks"'
         );
+      } else if (errored) {
+        debug.warn('"beforeAll" jest lifecycle hook was skipped due to previous errors');
       } else {
         await initializeMemoryServerOverride();
       }
@@ -274,28 +274,36 @@ export function setupMemoryServerOverride({
     }
   });
 
-  if (!defer) {
-    beforeEach(async () => {
-      try {
-        if (errored) {
-          debug.warn(
-            '"beforeEach" jest lifecycle hook was skipped due to previous errors'
-          );
-        } else {
-          setSchemaAndData();
-          await reinitializeServerDatabases();
-        }
-      } catch (error) {
-        errored = true;
-        debug.error('an error occurred within the "beforeEach" lifecycle hook');
-        throw error;
+  beforeEach(async () => {
+    try {
+      if (defer) {
+        debug.message(
+          '"beforeEach" jest lifecycle hook was skipped due to defer !== false'
+        );
+      } else if (errored) {
+        debug.warn(
+          '"beforeEach" jest lifecycle hook was skipped due to previous errors'
+        );
+      } else {
+        setSchemaAndData();
+        await reinitializeServerDatabases();
       }
-    });
-  }
+    } catch (error) {
+      errored = true;
+      debug.error('an error occurred within the "beforeEach" lifecycle hook');
+      throw error;
+    }
+  });
 
   afterAll(async () => {
     try {
-      await killMemoryServerOverride();
+      if (defer === 'without-hooks') {
+        debug.warn(
+          '"afterAll" jest lifecycle hook was skipped due to defer === "without-hooks"'
+        );
+      } else {
+        await killMemoryServerOverride();
+      }
     } catch (error) {
       errored = true;
       debug.error('an error occurred within the "afterAll" lifecycle hook');
