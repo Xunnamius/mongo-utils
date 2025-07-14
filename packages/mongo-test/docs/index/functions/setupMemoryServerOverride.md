@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`options?`): [`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)
 
-Defined in: [mongo-test/src/index.ts:227](https://github.com/Xunnamius/mongo-utils/blob/2dfe9a5821aec455c625ca725941516da4c8d29f/packages/mongo-test/src/index.ts#L227)
+Defined in: [mongo-test/src/index.ts:232](https://github.com/Xunnamius/mongo-utils/blob/32f7f4be31d1b2d896b46940a0a2f1886cd751cd/packages/mongo-test/src/index.ts#L232)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
@@ -17,10 +17,10 @@ If using `defer: 'without-initialization'`, `initializeMemoryServerOverride`
 must be called manually at least once.
 
 **WARNING:** if calling `setSchemaConfig` or `setDummyData` manually, they
-must be invoked _before_ `setupMemoryServerOverride` calls
-`initializeMemoryServerOverride` internally (or before
-`initializeMemoryServerOverride` is called manually when using `defer:
-'without-initialization'`)!
+must be invoked _before_ `setupMemoryServerOverride` is called. When using
+`defer` mode, `setSchemaConfig` and `setDummyData` can be invoked after
+`initializeMemoryServerOverride` is called but _must be invoked before
+`reinitializeServerDatabases` is called_.
 
 ## Parameters
 
