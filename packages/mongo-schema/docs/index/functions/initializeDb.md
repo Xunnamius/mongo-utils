@@ -8,7 +8,7 @@
 
 > **initializeDb**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [mongo-schema/src/index.ts:217](https://github.com/Xunnamius/mongo-utils/blob/215b087cc1b8fd6914cf3fbe657f77626466f333/packages/mongo-schema/src/index.ts#L217)
+Defined in: [mongo-schema/src/index.ts:221](https://github.com/Xunnamius/mongo-utils/blob/e3ec31e0a6fc665c34c6cfcada5f75d068e58b2c/packages/mongo-schema/src/index.ts#L221)
 
 Creates a database and initializes its collections. If the database does not
 exist before calling this function, it will be created first. This function

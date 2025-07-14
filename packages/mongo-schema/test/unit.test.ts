@@ -1,6 +1,12 @@
 import { MongoClient } from 'mongodb';
 
-import { resetSharedMemory } from 'multiverse+shared:memory.ts';
+import { ErrorMessage as SharedErrorMessage } from 'multiverse+shared:error.ts';
+
+import {
+  getFromSharedMemory,
+  getSharedMemoryFromGlobalRuntime,
+  resetSharedMemory
+} from 'multiverse+shared:memory.ts';
 
 import {
   closeClient,
@@ -17,11 +23,17 @@ import {
 import { ErrorMessage } from 'universe+mongo-schema:error.ts';
 
 import {
+  runWithMongoSchemaMultitenancy,
+  setupForcedMultitenancyOverride
+} from 'universe+mongo-schema:multitenant.ts';
+
+import {
   asMocked,
   makeMockedMongoConnectMethod,
   mockEnvFactory
 } from 'testverse:util.ts';
 
+import type { SharedMemory } from 'multiverse+shared:memory.ts';
 import type { DbSchema } from 'universe+mongo-schema';
 import type { TestDbResult } from 'testverse:util.ts';
 
@@ -280,10 +292,141 @@ describe('::initializeDb', () => {
   });
 });
 
-describe('/context', () => {
-  describe('::???', () => {
-    it('todo', async () => {
+describe('/multitenant', () => {
+  describe('::setupForcedMultitenancyOverride', () => {
+    it('sets mode in memory', async () => {
       expect.hasAssertions();
+
+      expect(getFromSharedMemory('mode')).toBe('singleton');
+      setupForcedMultitenancyOverride('multitenant');
+
+      expect(() => getFromSharedMemory('mode')).toThrow(
+        SharedErrorMessage.IllegalAccessOfSingleton()
+      );
+
+      setupForcedMultitenancyOverride('singleton');
+      expect(getFromSharedMemory('mode')).toBe('singleton');
+    });
+  });
+
+  describe('::runWithMongoSchemaMultitenancy', () => {
+    it('isolates separate global shared memory instances by tenantId', async () => {
+      expect.hasAssertions();
+
+      const outerSharedMemory = getSharedMemoryFromGlobalRuntime({
+        doForcedMultitenancyCheck: false
+      });
+
+      const originalOuterSharedMemory = { ...outerSharedMemory };
+      let db: Awaited<ReturnType<typeof getDb>>;
+
+      expect(getFromSharedMemory('asyncLocalTenantId')).toBeUndefined();
+
+      await withMockedEnv(
+        async function () {
+          await runWithMongoSchemaMultitenancy('tenant-1', async function () {
+            setSchemaConfig(outerSharedMemory.schema!);
+
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(0);
+
+            db = await getDb({ name: 'fake-db-1' });
+
+            await expect(getDb({ name: 'fake-db-1' })).resolves.toBe(db);
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            await expect(getDb({ name: 'fake-db-2' })).resolves.not.toBe(db);
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            expect(db.databaseName).toBe('fake-db-1');
+
+            expect(getFromSharedMemory('asyncLocalStorage')).toBe(
+              outerSharedMemory.asyncLocalStorage
+            );
+
+            expect(getFromSharedMemory('asyncLocalStores')).toBe(
+              outerSharedMemory.asyncLocalStores
+            );
+
+            expect(getFromSharedMemory('asyncLocalTenantId')).toBe('tenant-1');
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-1', async function () {
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            await expect(getDb({ name: 'fake-db-1' })).resolves.toBe(db);
+
+            db = await getDb({ name: 'fake-db-1' });
+
+            await expect(getDb({ name: 'fake-db-1' })).resolves.toBe(db);
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            await expect(getDb({ name: 'fake-db-2' })).resolves.not.toBe(db);
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            expect(db.databaseName).toBe('fake-db-1');
+
+            expect(getFromSharedMemory('asyncLocalStorage')).toBe(
+              outerSharedMemory.asyncLocalStorage
+            );
+
+            expect(getFromSharedMemory('asyncLocalStores')).toBe(
+              outerSharedMemory.asyncLocalStores
+            );
+
+            expect(getFromSharedMemory('asyncLocalTenantId')).toBe('tenant-1');
+          });
+
+          expect(outerSharedMemory).toStrictEqual<SharedMemory>(
+            originalOuterSharedMemory
+          );
+
+          await runWithMongoSchemaMultitenancy('tenant-2', async function () {
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+            await expect(getDb({ name: 'fake-db-1' })).rejects.toThrow(
+              ErrorMessage.NoSchemaConfigured()
+            );
+
+            setSchemaConfig({
+              databases: { 'async-db': { collections: [{ name: 'async-collection' }] } },
+              aliases: { 'async-alias': 'async-db' }
+            });
+
+            await expect(getDb({ name: 'fake-db-1' })).rejects.toThrow(
+              ErrorMessage.UnknownDatabaseAlias('fake-db-1')
+            );
+
+            await expect(getDb({ name: 'async-db' })).resolves.not.toBe(db);
+
+            db = await getDb({ name: 'async-db' });
+
+            await expect(getDb({ name: 'async-db' })).resolves.toBe(db);
+            expect(mockMongoClient.connect).toHaveBeenCalledTimes(2);
+            expect(db.databaseName).toBe('async-db');
+
+            expect(getFromSharedMemory('asyncLocalStorage')).toBe(
+              outerSharedMemory.asyncLocalStorage
+            );
+
+            expect(getFromSharedMemory('asyncLocalStores')).toBe(
+              outerSharedMemory.asyncLocalStores
+            );
+
+            expect(getFromSharedMemory('asyncLocalTenantId')).toBe('tenant-2');
+          });
+
+          expect(outerSharedMemory).toStrictEqual<SharedMemory>(
+            originalOuterSharedMemory
+          );
+        },
+        { MONGODB_URI: 'abc' }
+      );
+    });
+
+    it('runs properly after setupForcedMultitenancyOverride is called', async () => {
+      expect.hasAssertions();
+
+      expect(() => setSchemaConfig({ aliases: {}, databases: {} })).not.toThrow();
+
+      setupForcedMultitenancyOverride('multitenant');
+
+      expect(() => setSchemaConfig({ aliases: {}, databases: {} })).toThrow(
+        SharedErrorMessage.IllegalAccessOfSingleton()
+      );
     });
   });
 });

@@ -57,6 +57,5 @@ export function makeMockedMongoConnectMethod() {
         return url;
       }
     } as unknown as MongoClient);
-    // TODO: fix this unnecessary cast when jest 30 releases and types are fixed
   }) as unknown as jest.MockedFunctionDeep<typeof MongoClient.connect>;
 }

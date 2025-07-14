@@ -20,6 +20,10 @@
       "types": "./dist/packages/mongo-schema/src/index.d.ts",
       "default": "./dist/packages/mongo-schema/src/index.js"
     },
+    "./multitenant": {
+      "types": "./dist/packages/mongo-schema/src/multitenant.d.ts",
+      "default": "./dist/packages/mongo-schema/src/multitenant.js"
+    },
     "./error": {
       "types": "./dist/packages/mongo-schema/src/error.d.ts",
       "default": "./dist/packages/mongo-schema/src/error.js"
@@ -31,6 +35,9 @@
     "*": {
       "index": [
         "dist/packages/mongo-schema/src/index.d.ts"
+      ],
+      "multitenant": [
+        "dist/packages/mongo-schema/src/multitenant.d.ts"
       ],
       "error": [
         "dist/packages/mongo-schema/src/error.d.ts"
