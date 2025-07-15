@@ -109,6 +109,20 @@ describe('::getClient', () => {
       { MONGODB_URI: 'abc' }
     );
   });
+
+  it('supports creating a client with custom initialization parameters', async () => {
+    expect.hasAssertions();
+
+    await withMockedEnv(
+      async () => {
+        const client = await getClient({ MONGODB_URI: 'fake://custom.url' });
+        await expect(getClient()).resolves.toBe(client);
+        expect(mockMongoClient.connect).toHaveBeenCalledTimes(1);
+        expect(client.close()).toBe('fake://custom.url');
+      },
+      { MONGODB_URI: 'abc' }
+    );
+  });
 });
 
 describe('::getDb', () => {

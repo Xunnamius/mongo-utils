@@ -101,10 +101,15 @@ export function getAliasFromName(nameActual: string): string[] {
 
 /**
  * Lazily connects to the server on-demand, memoizing the result.
+ *
+ * Optionally accepts a set of initialization parameters that will be used
+ * instead of calling `getEnv` when creating a new client. This is useful in,
+ * for instance, multitenant situations where it is not possible to rely on
+ * exclusive control over `process.env`.
  */
-export async function getClient() {
+export async function getClient(init?: { MONGODB_URI: string }) {
   if (!getFromSharedMemory('client')) {
-    const uri = getEnv().MONGODB_URI;
+    const uri = init?.MONGODB_URI ?? getEnv().MONGODB_URI;
     debug('connecting to mongo server at %O', uri);
     setToSharedMemory('client', await MongoClient.connect(uri));
   } else {
