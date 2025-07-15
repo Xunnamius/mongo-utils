@@ -45,11 +45,11 @@ export type SharedMemory = {
   /**
    * Memoized resolved database schemas and aliases.
    */
-  schema: Functionable<DbSchema> | undefined;
+  schema: Functionable<DbSchema | undefined>;
   /**
    * Memoized dummy data.
    */
-  dummy: Functionable<DummyData> | undefined;
+  dummy: Functionable<DummyData | undefined>;
   /**
    * Whether to allow operating as a global singleton or force usage of the
    * `@-xun/mongo-schema/multitenant` API.
@@ -126,18 +126,45 @@ export function setToSharedMemory<T extends keyof SharedMemory>(
  * Resets shared memory to its initial state (except `asyncLocalStorage` and
  * `asyncLocalStores`).
  *
+ * Note that, in a multitenancy context, only the current tenant's shared memory
+ * will be reset unless `clearAsyncLocalStores` is enabled. Also note that, in a
+ * multitenancy context, clearing the current tenant's shared memory using this
+ * function **will have no effect within the current async scope**. That is: the
+ * "reset" **will not be visible to the caller of this function** (i.e. they'll
+ * still have full access to the old shared memory as if nothing changed) until
+ * the tenant re-enters a relevant async scope at some later point.
+ *
  * **WARNING:** this will also set `mode` in global memory back to `'singleton'`
  * if it was previously set to `'multitenant'`.
  *
  * @internal
  */
-export function resetSharedMemory() {
+export function resetSharedMemory({
+  clearAsyncLocalStores = false
+}: {
+  /**
+   * If `true`, all the stores used by the `asyncLocalStorage` will be deleted,
+   * resulting in a _complete_ reset of relevant system state.
+   *
+   * This is tantamount to calling `resetSharedMemory` across every tenant in a
+   * multitenancy configuration. However, note that currently-executing async
+   * workloads, which will still have their store in scope when the reset
+   * happens, will retain their stores until they exit said scope.
+   *
+   * @default false
+   */
+  clearAsyncLocalStores?: boolean;
+} = {}) {
   debug('resetting shared memory reset to blank state...');
 
-  getSharedMemoryFromGlobalRuntime({
+  const { asyncLocalStores } = getSharedMemoryFromGlobalRuntime({
     reset: true,
     doForcedMultitenancyCheck: false
   });
+
+  if (clearAsyncLocalStores) {
+    asyncLocalStores.clear();
+  }
 }
 
 /**

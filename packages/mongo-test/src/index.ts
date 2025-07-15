@@ -29,6 +29,7 @@ import { ErrorMessage } from 'universe+mongo-test:error.ts';
 
 import type { Functionable } from '@-xun/types';
 import type { Document } from 'mongodb';
+import type { SharedMemory } from 'multiverse+shared:memory.ts';
 import type { DbSchema, DummyData } from 'multiverse+shared:schema.ts';
 
 const debug = createDebugLogger({ namespace: 'mongo-test' });
@@ -157,9 +158,9 @@ export type SetupMemoryServerOverrideReturnType = {
  * This function must be called before any call to `getDummyData` or an error
  * will be thrown.
  */
-export function setDummyData(schemaFn: Functionable<DummyData>) {
+export function setDummyData(dataFn: SharedMemory['dummy']) {
   debug('setting schema configuration to memory');
-  setToSharedMemory('dummy', schemaFn);
+  setToSharedMemory('dummy', dataFn);
 }
 
 /**
@@ -264,6 +265,9 @@ export function setupMemoryServerOverride({
   // ? real mongodb instance (super bad!!!)
   let errored = false;
 
+  const reifiedSchemaFn = typeof schema === 'function' ? schema : () => schema;
+  const reifiedDataFn = typeof data === 'function' ? data : () => data;
+
   const debugPort = getEnv().MONGODB_MS_PORT;
   const port =
     // * https://stackoverflow.com/a/67445850/1367414
@@ -336,8 +340,8 @@ export function setupMemoryServerOverride({
     killMemoryServerOverride,
     reinitializeServerDatabases,
     resetSharedMemory,
-    schema: typeof schema === 'function' ? schema() : schema,
-    data: typeof data === 'function' ? data() : data
+    schema: reifiedSchemaFn(),
+    data: reifiedDataFn()
   };
 
   async function initializeMemoryServerOverride() {
@@ -391,11 +395,11 @@ export function setupMemoryServerOverride({
 
   function setSchemaAndData() {
     if (schema) {
-      setSchemaConfig(typeof schema === 'function' ? schema : () => schema);
+      setSchemaConfig(reifiedSchemaFn);
     }
 
     if (data) {
-      setDummyData(typeof data === 'function' ? data : () => data);
+      setDummyData(reifiedDataFn);
     }
   }
 }
