@@ -8,7 +8,9 @@
 
 > **Functionable**\<`T`\> = `T` \| (...`args`) => `T`
 
-Defined in: [shared/src/memory.ts:31](https://github.com/Xunnamius/mongo-utils/blob/dc008237cea91d9e0ab0ac3c2601605520a63c0f/packages/shared/src/memory.ts#L31)
+Defined in: node\_modules/@-xun/types/dist/src/index.d.ts:18
+
+Create a type that represents `T` or any function that returns `T`.
 
 ## Type Parameters
 
