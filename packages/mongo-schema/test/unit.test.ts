@@ -205,6 +205,34 @@ describe('::closeClient', () => {
       { MONGODB_URI: 'abc' }
     );
   });
+
+  it('closes global singleton client and multitenancy clients clearCache is "all-tenants"', async () => {
+    expect.hasAssertions();
+
+    await withMockedEnv(
+      async () => {
+        const client1 = await getClient();
+        let client2: typeof client1;
+
+        await runWithMongoSchemaMultitenancy('test', async () => {
+          client2 = await getClient();
+        });
+
+        await expect(getClient()).resolves.toBe(client1);
+        await runWithMongoSchemaMultitenancy('test', async () => {
+          await expect(getClient()).resolves.toBe(client2);
+        });
+
+        await closeClient({ clearCache: 'all-tenants' });
+
+        await expect(getClient()).resolves.not.toBe(client1);
+        await runWithMongoSchemaMultitenancy('test', async () => {
+          await expect(getClient()).resolves.not.toBe(client2);
+        });
+      },
+      { MONGODB_URI: 'abc' }
+    );
+  });
 });
 
 describe('::destroyDb', () => {

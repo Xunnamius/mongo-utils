@@ -7,6 +7,7 @@ import { createDebugLogger } from 'rejoinder';
 
 import {
   getFromSharedMemory,
+  getSharedMemoryFromGlobalRuntime,
   resetSharedMemory,
   setToSharedMemory
 } from 'multiverse+shared:memory.ts';
@@ -124,23 +125,55 @@ export async function getClient(init?: { MONGODB_URI: string }) {
  * clears shared memory.
  *
  * If `clearCache` is `true` (default), internal shared memory will be cleared
- * when this function is called. Set this to `false` if invoking this function
- * anywhere other than at the top level of an application. Libraries meant to be
- * invoked by such applications should be wary when using this function to clear
- * shared memory since there could be multiple instances of this package in
- * memory that could be relying upon it.
+ * when this function is called.
+ *
+ * Set `clearCache` to `false` if invoking this function anywhere other than at
+ * the top level of an application. Libraries meant to be invoked by such
+ * applications should be wary when using this function to clear shared memory
+ * since there could be multiple instances of this package in memory that could
+ * be relying upon it.
+ *
+ * Set `clearCache` to `'all-tenants'` in a multitenancy scenario when invoking
+ * this function outside of an async context with the goal of closing all
+ * clients across all tenants.
  */
-export async function closeClient({ clearCache = true }: { clearCache?: boolean } = {}) {
-  const client = getFromSharedMemory('client');
+export async function closeClient({
+  clearCache = true
+}: {
+  /**
+   * @default true
+   */
+  clearCache?: boolean | 'all-tenants';
+} = {}) {
+  if (clearCache === 'all-tenants') {
+    const { asyncLocalStores, client } = getSharedMemoryFromGlobalRuntime({
+      doForcedMultitenancyCheck: false
+    });
 
-  /* istanbul ignore else */
-  if (client) {
-    debug('closing server connection');
-    await client.close();
+    /* istanbul ignore else */
+    if (client) {
+      debug('closing server connection in global singleton context');
+      await client.close();
+    }
+
+    await Promise.all(
+      asyncLocalStores.entries().map(async ([tenant, store]) => {
+        debug('closing server connection in local async context for tenant %O', tenant);
+        await store.client?.close();
+      })
+    );
+  } else {
+    const client = getFromSharedMemory('client');
+
+    /* istanbul ignore else */
+    if (client) {
+      debug('closing server connection');
+      await client.close();
+    }
   }
 
   if (clearCache) {
-    resetSharedMemory();
+    resetSharedMemory({ clearAsyncLocalStores: clearCache === 'all-tenants' });
   }
 }
 
