@@ -8,6 +8,7 @@ import { toss } from 'toss-expression';
 import { resetSharedMemory } from 'multiverse+shared:memory.ts';
 
 import {
+  generateMockSensitiveObjectId,
   getDummyData,
   hydrateDbWithDummyData,
   setDummyData,
@@ -747,11 +748,15 @@ describe('::setupMemoryServerOverride', () => {
     const oldAfterAll = afterAll;
 
     try {
-      const { default: library } = await import('@-xun/mongo-schema');
+      const { default: schemaLibrary } = await import('@-xun/mongo-schema');
 
       const destroySpy = jest
-        .spyOn(library, 'destroyDb')
+        .spyOn(schemaLibrary, 'destroyDb')
         .mockImplementation(async () => true);
+
+      const closeClientSpy = jest
+        .spyOn(schemaLibrary, 'closeClient')
+        .mockImplementation(async () => undefined);
 
       // eslint-disable-next-line no-global-assign
       beforeAll = jest.fn();
@@ -783,7 +788,7 @@ describe('::setupMemoryServerOverride', () => {
             )
           ).resolves.toBeUndefined();
 
-          // ? Other hooks are also noops
+          // ? Other hooks are also noops...
           await expect(
             asMocked(beforeEach).mock.calls[0]![0](
               undefined as unknown as jest.DoneCallback
@@ -791,6 +796,15 @@ describe('::setupMemoryServerOverride', () => {
           ).resolves.toBeUndefined();
 
           expect(destroySpy).not.toHaveBeenCalled();
+
+          // ? ... except afterAll, which always does cleanup
+          await expect(
+            asMocked(afterAll).mock.calls[0]![0](
+              undefined as unknown as jest.DoneCallback
+            )
+          ).resolves.toBeUndefined();
+
+          expect(closeClientSpy).toHaveBeenCalled();
         },
         {
           VSCODE_INSPECTOR_OPTIONS: 'exists',
@@ -801,8 +815,9 @@ describe('::setupMemoryServerOverride', () => {
       asMocked(beforeAll).mockReset();
       asMocked(beforeEach).mockReset();
       asMocked(afterAll).mockReset();
+
       jest
-        .spyOn(library, 'getSchemaConfig')
+        .spyOn(schemaLibrary, 'getSchemaConfig')
         .mockImplementation(() => toss(new Error('fake')));
 
       setupMemoryServerOverride();
@@ -815,6 +830,20 @@ describe('::setupMemoryServerOverride', () => {
       await expect(
         asMocked(beforeEach).mock.calls[0]![0](undefined as unknown as jest.DoneCallback)
       ).resolves.toBeUndefined();
+
+      asMocked(beforeAll).mockReset();
+      asMocked(beforeEach).mockReset();
+      asMocked(afterAll).mockReset();
+
+      closeClientSpy.mockImplementation(async () => toss(new Error('fake badness')));
+
+      setupMemoryServerOverride();
+
+      // ? Always runs regardless of the other hooks, never becomes a noop, but
+      // ? still handles errors as gracefully
+      await expect(
+        asMocked(afterAll).mock.calls[0]![0](undefined as unknown as jest.DoneCallback)
+      ).rejects.toThrow('fake badness');
     } finally {
       // eslint-disable-next-line no-global-assign
       beforeAll = oldBeforeAll;
@@ -827,7 +856,7 @@ describe('::setupMemoryServerOverride', () => {
     }
   });
 
-  it('returns reified schema and data object properties and reset function when called', async () => {
+  it('always returns a resetSharedMemory function and always returns "schema" and "data" as objects', async () => {
     expect.hasAssertions();
 
     const oldBeforeAll = beforeAll;
@@ -855,14 +884,27 @@ describe('::setupMemoryServerOverride', () => {
             'something-or-other': { _generatedAt: Date.now() }
           };
 
-          const { schema, data, resetSharedMemory } = setupMemoryServerOverride({
-            schema: () => expectedSchema,
-            data: () => expectedData
-          });
+          {
+            const { schema, data, resetSharedMemory } = setupMemoryServerOverride({
+              schema: () => expectedSchema,
+              data: () => expectedData
+            });
 
-          expect(schema).toBe(expectedSchema);
-          expect(data).toBe(expectedData);
-          expect(resetSharedMemory).toBeFunction();
+            expect(schema).toBe(expectedSchema);
+            expect(data).toBe(expectedData);
+            expect(resetSharedMemory).toBeFunction();
+          }
+
+          {
+            const { schema, data, resetSharedMemory } = setupMemoryServerOverride({
+              schema: expectedSchema,
+              data: expectedData
+            });
+
+            expect(schema).toBe(expectedSchema);
+            expect(data).toBe(expectedData);
+            expect(resetSharedMemory).toBeFunction();
+          }
         },
         {
           VSCODE_INSPECTOR_OPTIONS: 'exists',
@@ -879,5 +921,12 @@ describe('::setupMemoryServerOverride', () => {
       // eslint-disable-next-line no-global-assign
       afterAll = oldAfterAll;
     }
+  });
+});
+
+describe('::generateMockSensitiveObjectId', () => {
+  it('runs to completion', async () => {
+    expect.hasAssertions();
+    expect(() => generateMockSensitiveObjectId()).not.toThrow();
   });
 });

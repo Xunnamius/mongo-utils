@@ -190,8 +190,15 @@ describe('::itemToObjectId', () => {
     );
   });
 
-  // TODO:
-  it.todo('does not throw if item is irreducible/invalid if ignoreInvalidId is true');
+  it('does not throw if item is irreducible/invalid if ignoreInvalidId is true', async () => {
+    expect.hasAssertions();
+
+    expect(() => itemToObjectId('bad')).toThrow();
+    expect(() => itemToObjectId('bad', { ignoreInvalidId: true })).not.toThrow();
+
+    expect(() => itemToObjectId(['bad'])).toThrow();
+    expect(() => itemToObjectId(['bad'], { ignoreInvalidId: true })).not.toThrow();
+  });
 });
 
 describe('::itemToStringId', () => {

@@ -77,10 +77,10 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  resetSharedMemory();
+  resetSharedMemory({ clearAsyncLocalStores: true });
 });
 
-describe('::getSchemaConfig', () => {
+describe('::getSchemaConfig (and ::setSchemaConfig)', () => {
   it('dynamically imports customizations', async () => {
     expect.hasAssertions();
 
@@ -173,6 +173,20 @@ describe('::closeClient', () => {
         await expect(getClient()).resolves.toBe(client);
         await closeClient();
         await expect(getClient()).resolves.not.toBe(client);
+      },
+      { MONGODB_URI: 'abc' }
+    );
+  });
+
+  it('closes client without resetting memory if clearCache is disabled', async () => {
+    expect.hasAssertions();
+
+    await withMockedEnv(
+      async () => {
+        const client = await getClient();
+        await expect(getClient()).resolves.toBe(client);
+        await closeClient({ clearCache: false });
+        await expect(getClient()).resolves.toBe(client);
       },
       { MONGODB_URI: 'abc' }
     );
@@ -426,6 +440,70 @@ describe('/multitenant', () => {
 
       expect(() => setSchemaConfig({ aliases: {}, databases: {} })).toThrow(
         SharedErrorMessage.IllegalAccessOfSingleton()
+      );
+    });
+
+    it('supports per-tenant memory reset', async () => {
+      expect.hasAssertions();
+
+      const outerSharedMemory = getSharedMemoryFromGlobalRuntime({
+        doForcedMultitenancyCheck: false
+      });
+
+      await withMockedEnv(
+        async function () {
+          await runWithMongoSchemaMultitenancy('tenant-1', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+
+            setSchemaConfig(outerSharedMemory.schema!);
+
+            expect(() => getSchemaConfig()).not.toThrow();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-2', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+
+            setSchemaConfig(outerSharedMemory.schema!);
+
+            expect(() => getSchemaConfig()).not.toThrow();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-3', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+
+            setSchemaConfig(outerSharedMemory.schema!);
+
+            expect(() => getSchemaConfig()).not.toThrow();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-1', async function () {
+            expect(() => getSchemaConfig()).not.toThrow();
+            resetSharedMemory();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-1', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-2', async function () {
+            expect(() => getSchemaConfig()).not.toThrow();
+            resetSharedMemory();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-2', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-3', async function () {
+            expect(() => getSchemaConfig()).not.toThrow();
+            resetSharedMemory();
+          });
+
+          await runWithMongoSchemaMultitenancy('tenant-3', async function () {
+            expect(() => getSchemaConfig()).toThrow();
+          });
+        },
+        { MONGODB_URI: 'abc' }
       );
     });
   });
