@@ -6,9 +6,9 @@
 
 # Function: setDummyData()
 
-> **setDummyData**(`schemaFn`): `void`
+> **setDummyData**(`dataFn`): `void`
 
-Defined in: [packages/mongo-test/src/index.ts:160](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L160)
+Defined in: [packages/mongo-test/src/index.ts:161](https://github.com/Xunnamius/mongo-utils/blob/78da2e96c8ecb2db1e9e0e0ecca9e2e7a885109d/packages/mongo-test/src/index.ts#L161)
 
 Sets global dummy data singleton (which already includes some built-in
 defaults).
@@ -18,9 +18,9 @@ will be thrown.
 
 ## Parameters
 
-### schemaFn
+### dataFn
 
-[`Functionable`](../type-aliases/Functionable.md)\<[`DummyData`](../type-aliases/DummyData.md)\>
+[`Functionable`](../type-aliases/Functionable.md)\<`undefined` \| [`DummyData`](../type-aliases/DummyData.md)\>
 
 ## Returns
 

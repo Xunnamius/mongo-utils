@@ -8,7 +8,7 @@
 
 > **setupMemoryServerOverride**(`options?`): [`SetupMemoryServerOverrideReturnType`](../type-aliases/SetupMemoryServerOverrideReturnType.md)
 
-Defined in: [packages/mongo-test/src/index.ts:252](https://github.com/Xunnamius/mongo-utils/blob/d24174744181a6638ba06418de88bfce7e92fff4/packages/mongo-test/src/index.ts#L252)
+Defined in: [packages/mongo-test/src/index.ts:253](https://github.com/Xunnamius/mongo-utils/blob/78da2e96c8ecb2db1e9e0e0ecca9e2e7a885109d/packages/mongo-test/src/index.ts#L253)
 
 Setup per-test versions of the mongodb client and database connections using
 jest lifecycle hooks.
