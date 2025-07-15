@@ -8,7 +8,7 @@
 
 > **getNameFromAlias**(`alias`): `string`
 
-Defined in: [packages/mongo-schema/src/index.ts:53](https://github.com/Xunnamius/mongo-utils/blob/7b25b3728184acdc4dd308dd54ecbebd6fc132bd/packages/mongo-schema/src/index.ts#L53)
+Defined in: [packages/mongo-schema/src/index.ts:54](https://github.com/Xunnamius/mongo-utils/blob/22de939f192fb2c686749b8a378c031c83e2b0b0/packages/mongo-schema/src/index.ts#L54)
 
 Accepts a database alias (or real name) and returns its real name.
 

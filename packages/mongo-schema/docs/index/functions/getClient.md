@@ -8,7 +8,7 @@
 
 > **getClient**(`init?`): `Promise`\<`MongoClient`\>
 
-Defined in: [packages/mongo-schema/src/index.ts:110](https://github.com/Xunnamius/mongo-utils/blob/7b25b3728184acdc4dd308dd54ecbebd6fc132bd/packages/mongo-schema/src/index.ts#L110)
+Defined in: [packages/mongo-schema/src/index.ts:111](https://github.com/Xunnamius/mongo-utils/blob/22de939f192fb2c686749b8a378c031c83e2b0b0/packages/mongo-schema/src/index.ts#L111)
 
 Lazily connects to the server on-demand, memoizing the result.
 

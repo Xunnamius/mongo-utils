@@ -8,7 +8,7 @@
 
 > **runWithMongoSchemaMultitenancy**(`tenantId`, `runtime`): `Promise`\<`void`\>
 
-Defined in: [packages/mongo-schema/src/multitenant.ts:66](https://github.com/Xunnamius/mongo-utils/blob/7b25b3728184acdc4dd308dd54ecbebd6fc132bd/packages/mongo-schema/src/multitenant.ts#L66)
+Defined in: [packages/mongo-schema/src/multitenant.ts:66](https://github.com/Xunnamius/mongo-utils/blob/22de939f192fb2c686749b8a378c031c83e2b0b0/packages/mongo-schema/src/multitenant.ts#L66)
 
 This function runs `@-xun/mongo-*` functions called within `runtime` using a
 separate global memory from the same functions called outside of `runtime`.
