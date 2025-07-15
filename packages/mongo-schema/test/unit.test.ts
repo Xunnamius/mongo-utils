@@ -339,7 +339,7 @@ describe('/multitenant', () => {
       await withMockedEnv(
         async function () {
           await runWithMongoSchemaMultitenancy('tenant-1', async function () {
-            setSchemaConfig(outerSharedMemory.schema!);
+            setSchemaConfig(outerSharedMemory.schema);
 
             expect(mockMongoClient.connect).toHaveBeenCalledTimes(0);
 
@@ -455,7 +455,7 @@ describe('/multitenant', () => {
           await runWithMongoSchemaMultitenancy('tenant-1', async function () {
             expect(() => getSchemaConfig()).toThrow();
 
-            setSchemaConfig(outerSharedMemory.schema!);
+            setSchemaConfig(outerSharedMemory.schema);
 
             expect(() => getSchemaConfig()).not.toThrow();
           });
@@ -463,7 +463,7 @@ describe('/multitenant', () => {
           await runWithMongoSchemaMultitenancy('tenant-2', async function () {
             expect(() => getSchemaConfig()).toThrow();
 
-            setSchemaConfig(outerSharedMemory.schema!);
+            setSchemaConfig(outerSharedMemory.schema);
 
             expect(() => getSchemaConfig()).not.toThrow();
           });
@@ -471,7 +471,7 @@ describe('/multitenant', () => {
           await runWithMongoSchemaMultitenancy('tenant-3', async function () {
             expect(() => getSchemaConfig()).toThrow();
 
-            setSchemaConfig(outerSharedMemory.schema!);
+            setSchemaConfig(outerSharedMemory.schema);
 
             expect(() => getSchemaConfig()).not.toThrow();
           });
